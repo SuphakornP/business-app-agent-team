@@ -31,13 +31,13 @@ If the user asks to start, run, spawn, continue, or plan an agent team, run star
    - code work: `implementation`
    - review/check: `review`
 3. Choose model tier:
-   - `free`: lightweight or cost-sensitive work.
-   - `balanced`: default for normal work.
-   - `strong`: architecture, implementation, review, or high-risk decisions.
+   - `strong`: default for this kit. Uses the configured Pi GPT-5.5 xhigh model.
+   - `balanced`: normal work with lower thinking level.
+   - `free`: lightweight or cost-sensitive work with lower thinking level.
 4. Choose effort:
    - `low`: small/routine.
-   - `medium`: default.
-   - `high`: complex or high-risk.
+   - `medium`: normal work.
+   - `high`: default for this kit, complex work, or high-risk work.
 5. Choose run mode:
    - Use `--execute` only when the user clearly wants to start agents now.
    - Use `--dry-run` when previewing, planning, or when Herdr/Pi availability is unclear.

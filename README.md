@@ -17,9 +17,12 @@ Agent Team Kit สำหรับเริ่มทีม AI agents แบบม
 
 ### 2026-06-30
 
+- 🔁 ปรับ README ให้เหลือ flow หลักแบบ `Herdr + Pi` เพื่อลดความสับสนเรื่อง runtime อื่น
+- 🧪 ทดสอบ Pi model แล้ว: `openai-codex/gpt-5.5:xhigh` ใช้งานได้
+- 🧠 ตั้งค่า default model profile เป็น GPT-5.5 xhigh ผ่าน Pi สำหรับ supervisor/workers
 - 📚 Rewrite README ใหม่เป็นคู่มือติดตั้ง/ใช้งานแบบ end-to-end
 - 📈 เพิ่ม Mermaid diagrams สำหรับ architecture, startup flow, phase flow และ status flow
-- 🧭 อธิบายชัดว่า Herdr เป็น control plane, Pi เป็น runtime หลัก, Codex ใช้ได้แบบ manual/fallback แต่ auto-spawn path ตอนนี้ใช้ Pi
+- 🧭 อธิบายชัดว่า Herdr เป็น control plane และ Pi เป็น runtime หลัก
 - 🧑‍✈️ เพิ่ม `agent-team-start` skill เพื่อให้เริ่มทีมแบบ skill-first ไม่ต้องจำ shell commands
 - 📊 เพิ่ม flow ถาม supervisor ระหว่างงาน เช่น "งานถึงไหนแล้ว" หรือ "ตอนนี้ทำอะไรอยู่"
 - ⚙️ เพิ่ม `config/agent-team.json` สำหรับ preset, agents, model tier และ effort
@@ -35,16 +38,10 @@ Agent Team Kit สำหรับเริ่มทีม AI agents แบบม
 
 1. เปิดโปรเจคใน `herdr`
 2. ใช้ `pi` เป็น supervisor/worker runtime หลัก
-3. เรียก skill `agent-team-start` หรือ command `agent-team-start`
-4. เลือก preset เช่น `discovery`, `blueprint`, `implementation`
-5. ระหว่างงานถามได้ว่า "งานถึงไหนแล้ว" ผ่าน `agent-team-ask`
-
-Codex ใช้ได้ แต่ใน package version นี้:
-
-- ✅ ใช้ Codex เป็น manual supervisor ได้ โดยให้ Codex อ่าน skill/prompt แล้วทำตาม workflow
-- ✅ ใช้ Codex เป็น manual coding worker ได้
-- ⚠️ auto-spawn ผ่าน `agent-team-start --execute` ตอนนี้ spawn ด้วย `pi` เป็นหลัก
-- 🔜 ถ้าต้องการ Codex auto-spawn เป็น first-class worker ต้องเพิ่ม runtime adapter ในรอบถัดไป
+3. ใช้ model หลัก `openai-codex/gpt-5.5:xhigh` ผ่าน Pi
+4. เรียก skill `agent-team-start` หรือ command `agent-team-start`
+5. เลือก preset เช่น `discovery`, `blueprint`, `implementation`
+6. ระหว่างงานถามได้ว่า "งานถึงไหนแล้ว" ผ่าน `agent-team-ask`
 
 ## 🧠 ภาพรวม Architecture
 
@@ -81,7 +78,6 @@ flowchart TD
 |---|---|
 | `Herdr` | Terminal multiplexer / control plane สำหรับเปิดหลาย pane และดูสถานะ agents |
 | `Pi` | Runtime หลักที่ scripts ใช้ spawn supervisor/workers |
-| `Codex` | ใช้ได้แบบ manual supervisor/worker หรือ coding agent แต่ยังไม่ใช่ auto-spawn default |
 | `agent-team-start` skill | ทางเข้าหลัก ให้ user เริ่มทีมโดยไม่ต้องจำ shell |
 | `.agent-team/` | state กลางของโปรเจค เช่น current phase, task board, status, results |
 | `docs/` | artifacts ที่ทีม agents ต้องผลิตและใช้เป็น evidence |
@@ -268,18 +264,17 @@ echo "$HERDR_ENV"
 
 ```bash
 pi \
-  --model opencode-go/glm-5.1 \
+  --model openai-codex/gpt-5.5:xhigh \
   --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
   --name supervisor_my-new-app
 ```
 
-ถ้าอยากประหยัด cost ในช่วงทดลอง ใช้ free model ได้:
+ถ้าต้องการดู model ที่ Pi เห็นในเครื่อง:
 
 ```bash
-pi \
-  --model opencode/minimax-m3-free \
-  --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
-  --name supervisor_my-new-app
+pi --list-models gpt
+pi --list-models claude
+pi --list-models kiro
 ```
 
 จากนั้นบอก supervisor:
@@ -290,44 +285,25 @@ Start with discovery for this project.
 Do not design or implement until phase gates are approved.
 ```
 
-### ใช้ Codex ได้ไหม
-
-ได้ แต่มี 2 แบบ:
-
-| วิธี | เหมาะกับ | หมายเหตุ |
-|---|---|---|
-| Pi supervisor + Pi workers | งานหลาย agent ผ่าน Herdr | recommended path ของ package นี้ |
-| Codex เป็น manual supervisor | คนที่เปิด Codex แล้วอยากให้คุม workflow | ให้ Codex อ่าน `skills/agent-team-start/SKILL.md` และ `prompts/supervisor.md` |
-| Codex เป็น coding worker | implementation/review แบบ manual | ใช้ได้ แต่ `agent-team-start --execute` ยังไม่ auto-spawn Codex |
-
-ถ้าจะใช้ Codex manual:
-
-```text
-Read skills/agent-team-start/SKILL.md and prompts/supervisor.md.
-Act as supervisor for this project.
-Use .agent-team/ and docs/ as the source of truth.
-Start with discovery and do not implement yet.
-```
-
 ## 🧑‍✈️ เริ่ม Agent Team แบบ Skill-first
 
 เมื่อมี Herdr และ Pi พร้อมแล้ว วิธีที่อยากให้ใช้คือ:
 
 ```text
 Use agent-team-start
-เริ่ม agent team สำหรับโปรเจคนี้ ทำ discovery ก่อน ใช้ balanced model effort medium
+เริ่ม agent team สำหรับโปรเจคนี้ ทำ discovery ก่อน ใช้ GPT-5.5 xhigh
 ```
 
 เบื้องหลัง skill จะเรียก script ประมาณนี้:
 
 ```bash
-agent-team-start . --preset discovery --tier balanced --effort medium --goal "Start discovery" --execute
+agent-team-start . --preset discovery --tier strong --effort high --goal "Start discovery" --execute
 ```
 
 ถ้ายังไม่พร้อมเปิด agent จริง ให้ preview ก่อน:
 
 ```bash
-agent-team-start . --preset discovery --tier balanced --effort medium --goal "Start discovery" --dry-run
+agent-team-start . --preset discovery --tier strong --effort high --goal "Start discovery" --dry-run
 ```
 
 ## 🧭 Startup Flow
@@ -370,17 +346,23 @@ sequenceDiagram
 
 | Tier | ใช้เมื่อ |
 |---|---|
-| `free` | งานเบา ประหยัด cost |
-| `balanced` | default สำหรับงานทั่วไป |
-| `strong` | architecture, implementation, review, high-risk |
+| `strong` | default ของ package นี้ ใช้ `openai-codex/gpt-5.5:xhigh` |
+| `balanced` | งานทั่วไปที่อยากลด thinking level |
+| `free` | งานเบา/ทดลอง ใช้ thinking level ต่ำลงตาม config |
 
 ### Effort
 
 | Effort | ใช้เมื่อ |
 |---|---|
+| `high` | default ของ package นี้ สำหรับงานจริง/งานซับซ้อน |
+| `medium` | งานทั่วไปที่ความเสี่ยงไม่สูง |
 | `low` | งานเล็ก ชัดเจน |
-| `medium` | default |
-| `high` | งานซับซ้อน ต้อง reasoning มาก |
+
+model จริงถูกเลือกจาก `config/agent-team.json` โดย default ตอนนี้คือ:
+
+```text
+openai-codex/gpt-5.5:xhigh
+```
 
 ตัวอย่าง:
 
@@ -474,7 +456,7 @@ herdr
 
 ```bash
 pi \
-  --model opencode-go/glm-5.1 \
+  --model openai-codex/gpt-5.5:xhigh \
   --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
   --name supervisor_approval
 ```
@@ -483,13 +465,13 @@ pi \
 
 ```text
 Use agent-team-start
-เริ่ม discovery สำหรับระบบ approval request ของทีม operation ใช้ balanced effort medium
+เริ่ม discovery สำหรับระบบ approval request ของทีม operation ใช้ GPT-5.5 xhigh
 ```
 
 4. ถ้าต้องการ command ตรง:
 
 ```bash
-agent-team-start . --preset discovery --tier balanced --effort medium --goal "Discover approval request workflow for operations team" --execute
+agent-team-start . --preset discovery --tier strong --effort high --goal "Discover approval request workflow for operations team" --execute
 ```
 
 5. ถามสถานะ:
@@ -551,8 +533,8 @@ NEXT_RECOMMENDED_ACTION:
 
 ```bash
 agent-team-init /path/to/project
-agent-team-start /path/to/project --preset discovery --tier balanced --effort medium --dry-run
-agent-team-start /path/to/project --preset discovery --tier balanced --effort medium --execute
+agent-team-start /path/to/project --preset discovery --tier strong --effort high --dry-run
+agent-team-start /path/to/project --preset discovery --tier strong --effort high --execute
 agent-team-ask /path/to/project "งานถึงไหนแล้ว"
 agent-team-status /path/to/project
 agent-team-validate /path/to/project discovery
@@ -575,19 +557,7 @@ bash /path/to/business-app-agent-team/scripts/ask-supervisor.sh /path/to/project
 
 ### `pi` command not found
 
-`--execute` ต้องใช้ Pi ถ้ายังไม่มี Pi ให้ใช้ manual mode กับ Codex/ChatGPT/Claude โดยให้ agent อ่าน `prompts/supervisor.md`
-
-### ใช้ Codex แทน Pi ได้ไหม
-
-ใช้ได้แบบ manual ตอนนี้:
-
-```text
-Read skills/agent-team-start/SKILL.md and prompts/supervisor.md.
-Act as the supervisor.
-Use .agent-team/ and docs/ as source of truth.
-```
-
-แต่ command `agent-team-start --execute` ยัง spawn worker ด้วย Pi เป็นหลัก
+`--execute` ต้องใช้ Pi ให้ติดตั้ง Pi และตั้งค่า subscription/API ให้เรียบร้อยก่อน
 
 ### `validate-artifacts.sh` fail เพราะมี `TBD`
 
@@ -606,7 +576,7 @@ herdr agent list
 
 ```bash
 pi \
-  --model opencode-go/glm-5.1 \
+  --model openai-codex/gpt-5.5:xhigh \
   --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
   --name supervisor_<project>
 ```
@@ -620,13 +590,12 @@ Version นี้ตั้งใจให้เป็น skill-first MVP:
 - scripts เป็น engine เบื้องหลัง
 - Herdr ใช้เป็น control plane
 - Pi เป็น runtime หลักสำหรับ auto-spawn
-- Codex ใช้ได้แบบ manual/fallback
 
 Roadmap ถัดไป:
 
-- Codex runtime adapter สำหรับ auto-spawn
 - Herdr pane verification และ reuse idle pane แบบเต็ม
 - interactive picker สำหรับ preset/model/effort
+- Pi model picker สำหรับเลือก GPT/Claude/Kiro model จาก `pi --list-models`
 - approval gate UI
 - richer supervisor dashboard/status summary
 

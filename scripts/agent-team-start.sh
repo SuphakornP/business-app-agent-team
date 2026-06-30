@@ -9,8 +9,8 @@ TARGET="."
 PHASE=""
 PRESET="auto"
 ROLE_CSV=""
-TIER="balanced"
-EFFORT="medium"
+TIER="strong"
+EFFORT="high"
 GOAL=""
 EXECUTE=0
 INIT_IF_MISSING=1
@@ -23,8 +23,8 @@ Options:
   --phase <phase>          intake|discovery|scope|flow|blueprint|implementation|qa|delivery
   --preset <preset>        auto|discovery|planning|flow|blueprint|implementation|review
   --agents <a,b,c>         explicit agent list
-  --tier <tier>            free|balanced|strong
-  --effort <effort>        low|medium|high
+  --tier <tier>            free|balanced|strong (default: strong)
+  --effort <effort>        low|medium|high (default: high)
   --goal <text>            human goal for spawned workers
   --execute                start Herdr/Pi agents
   --dry-run                prepare tasks only (default)

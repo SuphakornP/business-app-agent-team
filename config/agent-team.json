@@ -1,39 +1,39 @@
 {
   "modelProfiles": {
     "free": {
-      "description": "Use free/default models for routine planning and lightweight work.",
+      "description": "Use the configured Pi GPT-5.5 model with lower thinking for routine planning and lightweight work.",
       "efforts": {
-        "low": "opencode/minimax-m3-free",
-        "medium": "opencode/mimo-v2.5-free",
-        "high": "opencode/deepseek-v4-flash-free"
+        "low": "openai-codex/gpt-5.5:low",
+        "medium": "openai-codex/gpt-5.5:medium",
+        "high": "openai-codex/gpt-5.5:high"
       }
     },
     "balanced": {
-      "description": "Use a balanced paid/free mix for normal project work.",
+      "description": "Use GPT-5.5 through Pi for normal project work.",
       "efforts": {
-        "low": "opencode/deepseek-v4-flash-free",
-        "medium": "opencode-go/glm-5.1",
-        "high": "opencode-go/mimo-v2.5-pro"
+        "low": "openai-codex/gpt-5.5:medium",
+        "medium": "openai-codex/gpt-5.5:high",
+        "high": "openai-codex/gpt-5.5:xhigh"
       }
     },
     "strong": {
-      "description": "Use stronger paid models for architecture, implementation, and review.",
+      "description": "Use GPT-5.5 xhigh through Pi for architecture, implementation, and review.",
       "efforts": {
-        "low": "opencode-go/deepseek-v4-flash",
-        "medium": "opencode-go/deepseek-v4-pro",
-        "high": "opencode-go/qwen3.7-max"
+        "low": "openai-codex/gpt-5.5:high",
+        "medium": "openai-codex/gpt-5.5:xhigh",
+        "high": "openai-codex/gpt-5.5:xhigh"
       }
     }
   },
   "roles": {
     "supervisor-orchestrator": {
       "prompt": "supervisor.md",
-      "defaultTier": "balanced",
+      "defaultTier": "strong",
       "defaultEffort": "high",
       "models": {
-        "free": "opencode/minimax-m3-free",
-        "balanced": "opencode-go/glm-5.1",
-        "strong": "opencode-go/deepseek-v4-pro"
+        "free": "openai-codex/gpt-5.5:high",
+        "balanced": "openai-codex/gpt-5.5:xhigh",
+        "strong": "openai-codex/gpt-5.5:xhigh"
       }
     },
     "discovery-analyst": {
