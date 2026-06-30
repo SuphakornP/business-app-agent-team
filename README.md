@@ -511,4 +511,6 @@ gh auth login
 
 ## License
 
-ตอนนี้ package นี้ยังเป็น `UNLICENSED` ใน `package.json` เจ้าของ repo ควรเลือก license ก่อนเปิดให้ผู้อื่นนำไปใช้เชิง public distribution แบบชัดเจน
+MIT License
+
+คุณสามารถนำไปใช้ แก้ไข แจกจ่าย หรือ fork ต่อได้ โดยคง copyright notice และ license notice ตามไฟล์ `LICENSE`

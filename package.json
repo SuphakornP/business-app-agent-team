@@ -11,8 +11,9 @@
     "system-design",
     "qa"
   ],
-  "license": "UNLICENSED",
+  "license": "MIT",
   "files": [
+    "LICENSE",
     "skills",
     "prompts",
     "templates",
