@@ -17,6 +17,7 @@ Agent Team Kit สำหรับเริ่มทีม AI agents แบบม
 
 ### 2026-06-30
 
+- 🧪 เพิ่มตัวอย่างใช้งาน 2 กรณี: เริ่มโปรเจคใหม่จากศูนย์ และนำ existing project มา maintenance ต่อ
 - 🔁 ปรับ README ให้เหลือ flow หลักแบบ `Herdr + Pi` เพื่อลดความสับสนเรื่อง runtime อื่น
 - 🧪 ทดสอบ Pi model แล้ว: `openai-codex/gpt-5.5:xhigh` ใช้งานได้
 - 🧠 ตั้งค่า default model profile เป็น GPT-5.5 xhigh ผ่าน Pi สำหรับ supervisor/workers
@@ -443,16 +444,51 @@ sequenceDiagram
 
 ## 🧪 ตัวอย่างการใช้งานจริง
 
-### Case: เริ่มระบบ Approval Workflow
+### Case 1: New Project เริ่มจากศูนย์
 
-1. เปิด Herdr:
+ใช้กรณีที่ยังไม่มี code หรือมีแค่ idea เช่น "อยากทำระบบ approval request สำหรับทีม operation"
+
+หลักคิดของ case นี้คือ: อย่าเริ่มเขียน code ทันที ให้เริ่มจาก discovery → scope → flow → blueprint ก่อน
+
+```mermaid
+flowchart TD
+    A[Create project folder] --> B[agent-team-init]
+    B --> C[Open Herdr]
+    C --> D[Start Pi Supervisor]
+    D --> E[Discovery]
+    E --> F[Scope]
+    F --> G[Flow]
+    G --> H[Blueprint]
+    H --> I[Implementation]
+    I --> J[QA / Delivery]
+```
+
+1. สร้าง project folder:
 
 ```bash
+mkdir -p ~/Documents/PROJECTS/approval-workflow
 cd ~/Documents/PROJECTS/approval-workflow
+```
+
+2. Init agent team state:
+
+```bash
+agent-team-init .
+```
+
+ถ้ายังไม่ได้ใช้ `npm link`:
+
+```bash
+bash ~/Documents/PROJECTS/business-app-agent-team/scripts/init-project.sh .
+```
+
+3. เปิด Herdr:
+
+```bash
 herdr
 ```
 
-2. เปิด Pi supervisor ใน Herdr pane:
+4. เปิด Pi supervisor ใน Herdr pane:
 
 ```bash
 pi \
@@ -461,38 +497,162 @@ pi \
   --name supervisor_approval
 ```
 
-3. สั่งเริ่ม discovery:
+5. สั่ง supervisor เริ่ม discovery:
 
 ```text
 Use agent-team-start
-เริ่ม discovery สำหรับระบบ approval request ของทีม operation ใช้ GPT-5.5 xhigh
+นี่คือ new project: approval request สำหรับทีม operation
+เริ่ม discovery ก่อน ห้าม design หรือ implement จนกว่าจะผ่าน phase gate
+ใช้ GPT-5.5 xhigh
 ```
 
-4. ถ้าต้องการ command ตรง:
+หรือใช้ command ตรง:
 
 ```bash
 agent-team-start . --preset discovery --tier strong --effort high --goal "Discover approval request workflow for operations team" --execute
 ```
 
-5. ถามสถานะ:
+6. ถามสถานะระหว่าง agents ทำงาน:
 
 ```text
 Use agent-team-start
-งานถึงไหนแล้ว มี blocker อะไรไหม
+งานถึงไหนแล้ว ตอนนี้ agent แต่ละตัวทำอะไรอยู่ มี blocker ไหม
 ```
 
-6. ตรวจ artifact:
+หรือ:
+
+```bash
+agent-team-ask . "งานถึงไหนแล้ว ตอนนี้ agent แต่ละตัวทำอะไรอยู่ มี blocker ไหม"
+```
+
+7. ตรวจ artifact และปิด phase:
 
 ```bash
 agent-team-status .
 agent-team-validate . discovery
-```
-
-7. ถ้าผ่านแล้วปิด phase:
-
-```bash
 agent-team-close-phase . discovery
 ```
+
+หลังจาก discovery ผ่านแล้ว ค่อยไป phase ถัดไป:
+
+```bash
+agent-team-start . --preset planning --tier strong --effort high --goal "Create phase 1 scope and requirements" --execute
+agent-team-start . --preset flow --tier strong --effort high --goal "Create user journey and screen flow" --execute
+agent-team-start . --preset blueprint --tier strong --effort high --goal "Create architecture, API, permission, and data model blueprint" --execute
+```
+
+เริ่ม implementation เฉพาะเมื่อ blueprint ผ่านแล้ว:
+
+```bash
+agent-team-start . --preset implementation --tier strong --effort high --goal "Implement approved phase 1 only" --execute
+```
+
+### Case 2: Existing Project เอามา Maintenance ต่อ
+
+ใช้กรณีที่มี repo อยู่แล้ว และต้องการให้ agent team ช่วยดูแลต่อ เช่น bug fix, refactor, เพิ่ม feature, ทำเอกสาร, หรือ audit ความเสี่ยง
+
+หลักคิดของ case นี้คือ: อย่าให้ agent รีบแก้ code ทันที ให้เริ่มจาก maintenance intake/review เพื่อ map ระบบเดิมก่อน
+
+```mermaid
+flowchart TD
+    A[Existing repo] --> B[Check git status]
+    B --> C[agent-team-init]
+    C --> D[Open Herdr]
+    D --> E[Start Pi Supervisor]
+    E --> F[Maintenance Review]
+    F --> G[Scope the Change]
+    G --> H[Implementation Plan]
+    H --> I[Implement Small Batch]
+    I --> J[QA / Review]
+    J --> K[Delivery Summary]
+```
+
+1. เข้า existing project:
+
+```bash
+cd ~/Documents/PROJECTS/existing-app
+git status --short
+```
+
+ถ้ามีไฟล์ที่แก้ค้างอยู่ ให้ commit, stash, หรือแยก branch ตาม workflow ของทีมก่อนเริ่ม agent team
+
+ถ้าเป็น repo ที่มี git แนะนำให้แยก branch ก่อน:
+
+```bash
+git checkout -b agent-team/maintenance-intake
+```
+
+2. Init agent team state โดยไม่ทับ code เดิม:
+
+```bash
+agent-team-init .
+```
+
+หรือ:
+
+```bash
+bash ~/Documents/PROJECTS/business-app-agent-team/scripts/init-project.sh .
+```
+
+3. เปิด Herdr:
+
+```bash
+herdr
+```
+
+4. เปิด Pi supervisor:
+
+```bash
+pi \
+  --model openai-codex/gpt-5.5:xhigh \
+  --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
+  --name supervisor_existing_app
+```
+
+5. สั่ง supervisor ให้ review ก่อนแก้:
+
+```text
+Use agent-team-start
+นี่คือ existing project ที่ต้อง maintenance ต่อ
+ก่อนแก้ code ให้ review โครงสร้าง repo, current behavior, docs, tests, risks และ open questions ก่อน
+ห้าม implement จนกว่าจะสรุป scope และ approval gate ชัดเจน
+ใช้ GPT-5.5 xhigh
+```
+
+หรือใช้ command ตรง:
+
+```bash
+agent-team-start . --preset review --tier strong --effort high --goal "Audit existing project before maintenance. Identify structure, current behavior, risks, test gaps, and recommended next maintenance scope." --execute
+```
+
+6. ถ้าเป็น feature/bug ที่รู้อยู่แล้ว ให้ทำ scope ต่อก่อน implementation:
+
+```bash
+agent-team-start . --preset planning --tier strong --effort high --goal "Scope the requested maintenance change and define acceptance criteria" --execute
+```
+
+7. หลัง scope ผ่านแล้ว ค่อยให้ implement เป็น batch เล็ก:
+
+```bash
+agent-team-start . --preset implementation --tier strong --effort high --goal "Implement only the approved maintenance scope" --execute
+```
+
+8. Review และปิดงาน:
+
+```bash
+agent-team-start . --preset review --tier strong --effort high --goal "Review implementation, tests, risks, and delivery readiness" --execute
+agent-team-status .
+agent-team-validate . qa
+```
+
+สิ่งที่ควรได้จาก existing project review:
+
+- โครงสร้าง repo และ module สำคัญ
+- current behavior ที่ระบบทำอยู่
+- test/build command ที่ใช้จริง
+- risk หรือ technical debt ที่กระทบ maintenance
+- scope ที่ควรทำรอบแรก
+- สิ่งที่ต้องขอ approval ก่อนแก้ เช่น migration, auth, dependency, production config
 
 ## 📋 Agent Result Contract
 
