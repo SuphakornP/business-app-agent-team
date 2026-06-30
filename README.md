@@ -17,6 +17,7 @@ Agent Team Kit สำหรับเริ่มทีม AI agents แบบม
 
 ### 2026-06-30
 
+- 🧾 Clarify ว่า `prompts/` คือ Agent Role Prompts ไม่ใช่ agent runtime/config folder
 - 🧪 เพิ่มตัวอย่างใช้งาน 2 กรณี: เริ่มโปรเจคใหม่จากศูนย์ และนำ existing project มา maintenance ต่อ
 - 🔁 ปรับ README ให้เหลือ flow หลักแบบ `Herdr + Pi` เพื่อลดความสับสนเรื่อง runtime อื่น
 - 🧪 ทดสอบ Pi model แล้ว: `openai-codex/gpt-5.5:xhigh` ใช้งานได้
@@ -49,7 +50,7 @@ Agent Team Kit สำหรับเริ่มทีม AI agents แบบม
 ```mermaid
 flowchart TD
     U[Human / User] --> H[Herdr<br/>Control Plane]
-    H --> S[Supervisor Agent<br/>Pi + supervisor prompt]
+    H --> S[Supervisor Agent<br/>Pi + Agent Role Prompt]
     S --> ST[.agent-team state<br/>task-board, status, results]
     S --> A[agent-team-start / spawn scripts]
     A --> W1[Discovery Analyst]
@@ -80,6 +81,7 @@ flowchart TD
 | `Herdr` | Terminal multiplexer / control plane สำหรับเปิดหลาย pane และดูสถานะ agents |
 | `Pi` | Runtime หลักที่ scripts ใช้ spawn supervisor/workers |
 | `agent-team-start` skill | ทางเข้าหลัก ให้ user เริ่มทีมโดยไม่ต้องจำ shell |
+| `prompts/` | Agent Role Prompts สำหรับบอกบุคลิก/หน้าที่ของแต่ละ role ให้ Pi ผ่าน `--prompt-template` |
 | `.agent-team/` | state กลางของโปรเจค เช่น current phase, task board, status, results |
 | `docs/` | artifacts ที่ทีม agents ต้องผลิตและใช้เป็น evidence |
 
@@ -97,7 +99,7 @@ business-app-agent-team/
     ux-flow-design/
     data-model-review/
     qa-risk-review/
-  prompts/
+  prompts/                       # Agent Role Prompts ใช้กับ pi --prompt-template
     supervisor.md
     discovery-analyst.md
     product-manager.md
@@ -120,6 +122,8 @@ business-app-agent-team/
   docs/
   examples/
 ```
+
+หมายเหตุ: ใน repo นี้ `prompts/` หมายถึง Agent Role Prompts เช่น supervisor, discovery analyst, product manager และ reviewer ส่วน agent configuration จริง เช่น preset, model tier, effort และ role mapping อยู่ใน `config/agent-team.json`
 
 ## 🧰 Prerequisites
 
