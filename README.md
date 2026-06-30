@@ -1,116 +1,159 @@
 # 🤖 Business App Agent Team
 
+Agent Team Kit สำหรับเริ่มทีม AI agents แบบมี phase, artifact, approval gate และ supervisor ที่ถามสถานะระหว่างงานได้
+
+ใช้กับงานประเภท:
+
+- internal tool
+- business workflow
+- approval system
+- dashboard
+- CRM / ERP-lite
+- web app ที่ต้องเริ่มจาก requirement และ flow ก่อนเขียน code
+
 ## 📝 Changelog
 
-> เวลาแก้ไข repo นี้ ให้เพิ่มรายการใหม่ไว้บนสุดของ section นี้ เพื่อให้คนอ่านเห็นความเปลี่ยนแปลงล่าสุดทันที
+> เวลาแก้ repo นี้ ให้เพิ่มรายการใหม่ไว้บนสุด เพื่อให้เห็นว่าเปลี่ยนอะไรล่าสุด
 
 ### 2026-06-30
 
+- 📚 Rewrite README ใหม่เป็นคู่มือติดตั้ง/ใช้งานแบบ end-to-end
+- 📈 เพิ่ม Mermaid diagrams สำหรับ architecture, startup flow, phase flow และ status flow
+- 🧭 อธิบายชัดว่า Herdr เป็น control plane, Pi เป็น runtime หลัก, Codex ใช้ได้แบบ manual/fallback แต่ auto-spawn path ตอนนี้ใช้ Pi
 - 🧑‍✈️ เพิ่ม `agent-team-start` skill เพื่อให้เริ่มทีมแบบ skill-first ไม่ต้องจำ shell commands
 - 📊 เพิ่ม flow ถาม supervisor ระหว่างงาน เช่น "งานถึงไหนแล้ว" หรือ "ตอนนี้ทำอะไรอยู่"
 - ⚙️ เพิ่ม `config/agent-team.json` สำหรับ preset, agents, model tier และ effort
 - 🛠️ เพิ่ม `agent-team-start` และ `agent-team-ask` commands สำหรับให้ skill เรียกใช้อยู่เบื้องหลัง
 - ✨ เพิ่ม emoji ใน README เพื่อให้อ่านง่ายและ scan เร็วขึ้น
-- 📝 เพิ่ม Changelog ไว้ด้านบนของ README
 - 🛡️ ขยาย `.gitignore` เพื่อกันไฟล์ local, secrets, cache, logs, runtime state และ agent session artifacts
-- 📄 เพิ่ม MIT License และอัปเดต `package.json`
+- 📄 เพิ่ม MIT License
 - 🚀 สร้าง public GitHub repo และ push package เวอร์ชันแรก
-- 🧩 สร้าง MVP package: skills, prompts, templates, schemas, scripts, docs และ examples
 
-Agent Team Kit สำหรับสร้างทีม AI agents แบบมีระบบ เหมาะกับงานสร้าง web app, internal tool, dashboard, approval workflow, CRM/ERP-lite และ business process software
+## ✅ สรุปสั้นที่สุด
 
-Repo นี้ไม่ได้เป็นแค่ prompt เดี่ยว แต่เป็น package กลางที่รวม:
+ถ้าจะใช้งานจริงแบบหลาย agent:
 
-- 🧠 วิธีคิดของ supervisor agent
-- 👥 role ของ specialist agents
-- 🚦 phase gate ตั้งแต่ discovery ถึง delivery
-- 📁 artifact templates
-- 📋 agent result contract
-- ✅ approval policy
-- 🛠️ scripts สำหรับเริ่มโปรเจคใหม่และตรวจ phase
+1. เปิดโปรเจคใน `herdr`
+2. ใช้ `pi` เป็น supervisor/worker runtime หลัก
+3. เรียก skill `agent-team-start` หรือ command `agent-team-start`
+4. เลือก preset เช่น `discovery`, `blueprint`, `implementation`
+5. ระหว่างงานถามได้ว่า "งานถึงไหนแล้ว" ผ่าน `agent-team-ask`
 
-เป้าหมายคือให้ทุกโปรเจคใหม่ติดตั้ง workflow เดียวกันได้ แล้วลดปัญหา AI รีบออกแบบระบบหรือเขียนโค้ดก่อนเข้าใจโจทย์จริง
+Codex ใช้ได้ แต่ใน package version นี้:
 
-```text
-Intake -> Discovery -> Scope -> Flow -> Requirements -> Blueprint -> Implementation Plan -> Implementation -> QA -> Delivery
+- ✅ ใช้ Codex เป็น manual supervisor ได้ โดยให้ Codex อ่าน skill/prompt แล้วทำตาม workflow
+- ✅ ใช้ Codex เป็น manual coding worker ได้
+- ⚠️ auto-spawn ผ่าน `agent-team-start --execute` ตอนนี้ spawn ด้วย `pi` เป็นหลัก
+- 🔜 ถ้าต้องการ Codex auto-spawn เป็น first-class worker ต้องเพิ่ม runtime adapter ในรอบถัดไป
+
+## 🧠 ภาพรวม Architecture
+
+```mermaid
+flowchart TD
+    U[Human / User] --> H[Herdr<br/>Control Plane]
+    H --> S[Supervisor Agent<br/>Pi + supervisor prompt]
+    S --> ST[.agent-team state<br/>task-board, status, results]
+    S --> A[agent-team-start / spawn scripts]
+    A --> W1[Discovery Analyst]
+    A --> W2[Product Manager]
+    A --> W3[UX Flow Designer]
+    A --> W4[Solution Architect]
+    A --> W5[Data Modeler]
+    A --> W6[QA Risk Reviewer]
+    A --> W7[Implementation Worker]
+    A --> W8[Code Reviewer]
+    W1 --> D[docs/ artifacts]
+    W2 --> D
+    W3 --> D
+    W4 --> D
+    W5 --> D
+    W6 --> D
+    W7 --> D
+    W8 --> D
+    D --> S
+    ST --> S
+    S --> U
 ```
 
-## 🎯 เหมาะกับใคร
+### แต่ละตัวทำหน้าที่อะไร
 
-- 👨‍💻 คนที่อยากใช้ AI agents หลายตัวช่วยทำงานโปรเจค software
-- 🧭 ทีมที่อยากให้ AI เริ่มจาก discovery, scope, requirement, UX flow ก่อนเขียนโค้ด
-- 🧰 คนที่ใช้ Pi, Herdr, Codex, Claude หรือ coding agents อื่นๆ อยู่แล้ว
-- 🌱 มือใหม่ด้าน AI agents ที่อยากมี workflow ชัด ไม่ปล่อยให้ agent ทำงานมั่วหรือข้ามขั้น
+| ส่วน | หน้าที่ |
+|---|---|
+| `Herdr` | Terminal multiplexer / control plane สำหรับเปิดหลาย pane และดูสถานะ agents |
+| `Pi` | Runtime หลักที่ scripts ใช้ spawn supervisor/workers |
+| `Codex` | ใช้ได้แบบ manual supervisor/worker หรือ coding agent แต่ยังไม่ใช่ auto-spawn default |
+| `agent-team-start` skill | ทางเข้าหลัก ให้ user เริ่มทีมโดยไม่ต้องจำ shell |
+| `.agent-team/` | state กลางของโปรเจค เช่น current phase, task board, status, results |
+| `docs/` | artifacts ที่ทีม agents ต้องผลิตและใช้เป็น evidence |
 
-## 🧠 แนวคิดแบบง่าย
-
-ให้คิดว่า repo นี้สร้าง "ทีมงาน AI" แบบนี้:
-
-- 🧑‍✈️ `supervisor-orchestrator`: หัวหน้าทีม คุม phase, แตก task, ตรวจงาน, ขอ approval
-- 🔎 `discovery-analyst`: นักวิเคราะห์โจทย์ ถามคำถามก่อนออกแบบ
-- 📌 `product-manager`: แปลง discovery เป็น scope และ requirements
-- 🧭 `ux-flow-designer`: ทำ user journey, screen flow, state ต่างๆ
-- 🏗️ `solution-architect`: ทำ architecture, API, permission, integration
-- 🗃️ `data-modeler`: ทำ data model หลังจาก flow ชัดแล้ว
-- 🧪 `qa-risk-reviewer`: ตรวจ requirement, risk, test gap, edge case
-- 💻 `implementation-worker`: เขียนโค้ดหลังจาก blueprint ผ่านแล้ว
-- 🔍 `code-reviewer`: review implementation ก่อนส่งมอบ
-
-หลักสำคัญ: supervisor ไม่เชื่อคำว่า "done" เฉยๆ ต้องมี artifact, test/check, risk, decision log และ open questions ที่เคลียร์แล้ว
-
-## 📦 สิ่งที่อยู่ใน repo
+## 📦 ใน repo มีอะไร
 
 ```text
 business-app-agent-team/
-  skills/       # Skills สำหรับ Pi/Codex style agents
-  prompts/      # Prompt ของ supervisor และ worker agents
-  templates/    # Template เอกสารและ state files
-  schemas/      # JSON schema สำหรับ task/result/approval
-  scripts/      # init, spawn, validate, status, close phase
-  docs/         # operating model, phase gates, approval policy
-  examples/     # ตัวอย่างโจทย์สำหรับลองใช้
+  config/
+    agent-team.json              # preset, agent, model tier, effort
+  skills/
+    agent-team-start/            # skill หลักสำหรับเริ่ม/ถาม status
+    agent-orchestration/
+    system-discovery/
+    requirement-slicing/
+    ux-flow-design/
+    data-model-review/
+    qa-risk-review/
+  prompts/
+    supervisor.md
+    discovery-analyst.md
+    product-manager.md
+    ux-flow-designer.md
+    solution-architect.md
+    data-modeler.md
+    qa-risk-reviewer.md
+    implementation-worker.md
+    code-reviewer.md
+  scripts/
+    agent-team-start.sh
+    ask-supervisor.sh
+    init-project.sh
+    spawn-agent-team.sh
+    collect-agent-status.sh
+    validate-artifacts.sh
+    close-phase.sh
+  templates/
+  schemas/
+  docs/
+  examples/
 ```
 
-## 🧰 ต้องติดตั้งอะไรบ้าง
+## 🧰 Prerequisites
 
 ขั้นต่ำ:
-
-- ✅ `git`
-- ✅ `bash`
-- ✅ `python3`
-
-แนะนำสำหรับใช้งานเต็มรูปแบบ:
-
-- 🐙 `gh` GitHub CLI สำหรับ clone/create/push repo
-- 🤖 `pi` สำหรับรัน supervisor และ workers
-- 🪟 `herdr` สำหรับเปิดหลาย agent ใน terminal panes
-
-เช็คเครื่องมือ:
 
 ```bash
 git --version
 python3 --version
 bash --version
+```
+
+แนะนำสำหรับใช้งานเต็มรูปแบบ:
+
+```bash
+herdr --version
+pi --version
 gh --version
 ```
 
-ถ้าใช้ Pi/Herdr:
-
-```bash
-pi --version
-herdr --version
-```
-
-ถ้ายังไม่มี `gh`:
+ถ้ายังไม่มี GitHub CLI:
 
 ```bash
 brew install gh
 gh auth login
 ```
 
-## 🚀 วิธีติดตั้ง
+ถ้ายังไม่มี Herdr หรือ Pi ให้ติดตั้งตามวิธีของทีม/เครื่องคุณก่อน เพราะ `--execute` ต้องใช้สองตัวนี้
 
-### 1. Clone จาก GitHub
+## 🚀 ติดตั้ง Package
+
+### 1. Clone repo
 
 ```bash
 cd ~/Documents/PROJECTS
@@ -118,66 +161,79 @@ git clone https://github.com/SuphakornP/business-app-agent-team.git
 cd business-app-agent-team
 ```
 
-ตรวจว่า package พร้อมใช้:
+### 2. ตรวจ package
 
 ```bash
 bash scripts/validate-package.sh
 ```
 
-ถ้าผ่านจะเห็นประมาณนี้:
+ถ้าพร้อมใช้จะเห็น:
 
 ```text
-validating JSON files
-validating shell syntax
-validating skills
 package validation passed
 ```
 
-### 2. ใช้เป็น Pi package
+### 3. ทำให้ใช้ command สั้นได้
 
-ถ้า Pi environment ของคุณรองรับ package install:
-
-```bash
-pi install -l git:github.com/SuphakornP/business-app-agent-team@main
-```
-
-หรือใช้ path local หลังจาก clone:
+วิธีง่ายสุดคือใช้ path ตรง:
 
 ```bash
-pi install -l /path/to/business-app-agent-team
+bash ~/Documents/PROJECTS/business-app-agent-team/scripts/agent-team-start.sh --help
 ```
 
-ถ้า command นี้ใช้ไม่ได้ในเครื่องคุณ ให้ใช้วิธี clone repo แล้วเรียก scripts ด้วย path ตรงๆ แทน
+ถ้าอยากใช้ command สั้น เช่น `agent-team-start`:
 
-## 🧪 เริ่มใช้กับโปรเจคใหม่
+```bash
+cd ~/Documents/PROJECTS/business-app-agent-team
+npm link
+```
 
-สมมติคุณมีโปรเจคอยู่ที่:
+หลังจากนั้นจะเรียกได้:
+
+```bash
+agent-team-start --help
+agent-team-ask --help
+agent-team-status .
+```
+
+ถ้าไม่อยากใช้ `npm link` ให้ใช้ `bash /path/to/script.sh` เหมือนเดิมได้
+
+## 🏁 เริ่มใช้งานกับโปรเจคใหม่
+
+สมมติ target project คือ:
 
 ```bash
 ~/Documents/PROJECTS/my-new-app
 ```
 
-ให้ init agent team state:
+สร้าง project folder ถ้ายังไม่มี:
+
+```bash
+mkdir -p ~/Documents/PROJECTS/my-new-app
+```
+
+init agent team state:
 
 ```bash
 bash ~/Documents/PROJECTS/business-app-agent-team/scripts/init-project.sh ~/Documents/PROJECTS/my-new-app
 ```
 
-script จะสร้างโครงนี้ในโปรเจค:
+หรือถ้าใช้ `npm link` แล้ว:
+
+```bash
+agent-team-init ~/Documents/PROJECTS/my-new-app
+```
+
+ระบบจะสร้าง:
 
 ```text
 my-new-app/
   .agent-team/
-    state.md
     current-phase.md
     task-board.md
-    decision-log.md
-    risk-register.md
-    open-questions.md
-    phase-history.md
+    supervisor-status.md
     agent-results/
     tasks/
-    templates/
   docs/
     product/
     ux/
@@ -187,252 +243,274 @@ my-new-app/
     agent/
 ```
 
-หลังจากนั้นเข้าโปรเจค:
+## 🪟 ต้องเปิด Herdr ยังไง
 
-```bash
-cd ~/Documents/PROJECTS/my-new-app
-```
-
-ดูสถานะ:
-
-```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/collect-agent-status.sh .
-```
-
-ตรวจ phase intake:
-
-```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh . intake
-```
-
-หมายเหตุ: ครั้งแรก validator อาจ fail เพราะไฟล์ยังเป็น template ที่มี `TBD` อยู่ นี่ตั้งใจให้เป็นแบบนั้น เพื่อบังคับให้เติมข้อมูลจริงก่อนปิด phase
-
-## 🌱 วิธีใช้งานแบบง่ายที่สุด
-
-ถ้าคุณยังไม่พร้อมใช้ Herdr หรือ Pi ให้ใช้ repo นี้แบบ manual ก่อน
-
-1. เปิดไฟล์ `docs/product/00-intake.md`
-2. เติม problem statement, primary user, current workflow, pain point, success metric
-3. เปิด `docs/product/01-discovery.md`
-4. เติม scenario จริง, user roles, workflow, risks
-5. เปิด `docs/product/02-clarifying-questions.md`
-6. เขียนคำถามที่ยังไม่ชัด
-7. ให้ AI agent ที่คุณใช้ เช่น Codex, ChatGPT, Claude อ่าน prompt ใน `prompts/supervisor.md`
-8. ให้ agent ทำงานตาม phase และเขียน output ลง docs
-
-ตัวอย่าง prompt:
-
-```text
-Use the supervisor prompt from prompts/supervisor.md.
-Start from Intake and Discovery.
-Do not design or implement yet.
-Read docs/product/00-intake.md and create the discovery artifacts.
-If something is unclear, ask clarifying questions before scope or system design.
-```
-
-## 🧑‍✈️ วิธีใช้แบบ Skill-first
-
-เป้าหมายของ flow ใหม่นี้คือ user ไม่ต้องจำ shell commands เอง ให้เรียก skill แล้วให้ agent เป็นคนเลือก preset/model/effort และ run script ให้
-
-ตัวอย่างที่อยากให้ user พิมพ์:
-
-```text
-Use agent-team-start
-เริ่ม agent team สำหรับโปรเจคนี้ ทำ discovery ก่อน ใช้ balanced model effort medium
-```
-
-หรือ:
-
-```text
-Use agent-team-start
-สร้างทีมสำหรับทำ blueprint ระบบ approval workflow ใช้ strong model effort high
-```
-
-skill จะเลือกให้:
-
-- preset: `discovery`, `planning`, `flow`, `blueprint`, `implementation`, `review`
-- agents ที่ควรใช้ใน phase นั้น
-- model tier: `free`, `balanced`, `strong`
-- effort: `low`, `medium`, `high`
-- run mode: `dry-run` หรือ `execute`
-
-ถ้าต้องเรียก command เองจริงๆ ใช้:
-
-```bash
-agent-team-start . --preset discovery --tier balanced --effort medium --goal "Clarify approval workflow" --dry-run
-```
-
-ถ้าพร้อมให้ Herdr/Pi เปิด agents จริง:
-
-```bash
-agent-team-start . --preset discovery --tier balanced --effort medium --goal "Clarify approval workflow" --execute
-```
-
-## 📊 ถาม Supervisor ระหว่างงาน
-
-ระหว่าง supervisor สั่งงาน worker agents ไปแล้ว สามารถถามสถานะได้ เช่น:
-
-```text
-Use agent-team-start
-งานถึงไหนแล้ว ตอนนี้ agent แต่ละตัวทำอะไรอยู่ มี blocker ไหม
-```
-
-skill จะเรียก status flow ให้เอง:
-
-```bash
-agent-team-ask . "งานถึงไหนแล้ว ตอนนี้ทำอะไรอยู่ มี blocker ไหม"
-```
-
-สิ่งที่ระบบจะทำ:
-
-- อ่าน `.agent-team/current-phase.md`
-- อ่าน `.agent-team/task-board.md`
-- อ่าน `.agent-team/agent-results/*.md`
-- อ่าน `.agent-team/supervisor-status.md`
-- ถ้า Herdr ทำงานอยู่ จะส่ง `[STATUS_REQ]` ไปหา supervisor agent
-- ให้ supervisor update `.agent-team/supervisor-status.md`
-- สรุปกลับมาเป็นภาษาคนว่า phase ไหน, ใครทำอะไร, blocker คืออะไร, next step คืออะไร
-
-## 🤖 วิธีใช้กับ Pi
-
-เปิด Pi ในโปรเจคเป้าหมาย:
-
-```bash
-cd ~/Documents/PROJECTS/my-new-app
-pi --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md --name supervisor_my-new-app
-```
-
-แล้วบอก supervisor:
-
-```text
-Start with Intake and Discovery.
-Do not design or implement until the relevant phase gate is approved.
-Use the artifacts in docs/ and .agent-team/.
-```
-
-ถ้าจะใช้ specialist prompt:
-
-```bash
-pi --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/discovery-analyst.md --name discovery_my-new-app
-```
-
-## 🪟 วิธีใช้กับ Herdr
-
-Herdr เหมาะเมื่ออยากเปิด agent หลายตัวเป็น panes และให้ supervisor คุมงาน
-
-เข้าโปรเจค:
+เข้า target project แล้วเปิด Herdr:
 
 ```bash
 cd ~/Documents/PROJECTS/my-new-app
 herdr
 ```
 
-เตรียม task สำหรับ phase discovery โดยยังไม่เปิด agent:
+ถ้า agent ถูกเปิดอยู่ใน Herdr แล้ว สามารถเช็กได้ด้วย:
 
 ```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . discovery --dry-run
+echo "$HERDR_ENV"
 ```
 
-คำสั่งนี้จะสร้างไฟล์ task ใน:
+ถ้าได้ `1` แปลว่า pane นี้อยู่ใน Herdr และสามารถใช้คำสั่ง `herdr pane ...` / `herdr agent ...` ได้
+
+จากนั้นให้มีอย่างน้อย 1 supervisor agent อยู่ใน Herdr workspace
+
+### Runtime ที่แนะนำ: Pi Supervisor
+
+ใน pane ของ Herdr ให้รัน:
+
+```bash
+pi \
+  --model opencode-go/glm-5.1 \
+  --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
+  --name supervisor_my-new-app
+```
+
+ถ้าอยากประหยัด cost ในช่วงทดลอง ใช้ free model ได้:
+
+```bash
+pi \
+  --model opencode/minimax-m3-free \
+  --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
+  --name supervisor_my-new-app
+```
+
+จากนั้นบอก supervisor:
 
 ```text
-.agent-team/tasks/
+Use agent-team-start.
+Start with discovery for this project.
+Do not design or implement until phase gates are approved.
 ```
 
-ถ้าพร้อมเปิด agent จริง:
+### ใช้ Codex ได้ไหม
+
+ได้ แต่มี 2 แบบ:
+
+| วิธี | เหมาะกับ | หมายเหตุ |
+|---|---|---|
+| Pi supervisor + Pi workers | งานหลาย agent ผ่าน Herdr | recommended path ของ package นี้ |
+| Codex เป็น manual supervisor | คนที่เปิด Codex แล้วอยากให้คุม workflow | ให้ Codex อ่าน `skills/agent-team-start/SKILL.md` และ `prompts/supervisor.md` |
+| Codex เป็น coding worker | implementation/review แบบ manual | ใช้ได้ แต่ `agent-team-start --execute` ยังไม่ auto-spawn Codex |
+
+ถ้าจะใช้ Codex manual:
+
+```text
+Read skills/agent-team-start/SKILL.md and prompts/supervisor.md.
+Act as supervisor for this project.
+Use .agent-team/ and docs/ as the source of truth.
+Start with discovery and do not implement yet.
+```
+
+## 🧑‍✈️ เริ่ม Agent Team แบบ Skill-first
+
+เมื่อมี Herdr และ Pi พร้อมแล้ว วิธีที่อยากให้ใช้คือ:
+
+```text
+Use agent-team-start
+เริ่ม agent team สำหรับโปรเจคนี้ ทำ discovery ก่อน ใช้ balanced model effort medium
+```
+
+เบื้องหลัง skill จะเรียก script ประมาณนี้:
 
 ```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . discovery --execute
+agent-team-start . --preset discovery --tier balanced --effort medium --goal "Start discovery" --execute
 ```
 
-phase อื่นๆ:
+ถ้ายังไม่พร้อมเปิด agent จริง ให้ preview ก่อน:
 
 ```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . scope --dry-run
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . flow --dry-run
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . blueprint --dry-run
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . implementation --dry-run
+agent-team-start . --preset discovery --tier balanced --effort medium --goal "Start discovery" --dry-run
 ```
 
-ถ้าต้องการเลือก role เอง:
+## 🧭 Startup Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Herdr
+    participant Supervisor as Supervisor Agent
+    participant Skill as agent-team-start
+    participant Worker as Worker Agents
+    participant State as .agent-team
+    participant Docs as docs artifacts
+
+    User->>Herdr: open project workspace
+    User->>Supervisor: Use agent-team-start
+    Supervisor->>Skill: choose preset/tier/effort
+    Skill->>State: init/update current phase and task board
+    Skill->>Worker: spawn selected agents through Herdr/Pi
+    Worker->>Docs: create/update artifacts
+    Worker->>State: write agent result
+    Supervisor->>State: validate evidence
+    Supervisor->>User: summary / approval request
+```
+
+## 🎛️ Preset / Model / Effort
+
+### Preset
+
+| Preset | ใช้เมื่อ | Agents |
+|---|---|---|
+| `discovery` | เริ่มจากโจทย์/idea | `discovery-analyst` |
+| `planning` | ทำ scope และ requirements | `product-manager`, `qa-risk-reviewer` |
+| `flow` | ทำ user journey/screen flow | `ux-flow-designer`, `qa-risk-reviewer` |
+| `blueprint` | ทำ architecture/API/data model | `solution-architect`, `data-modeler`, `qa-risk-reviewer` |
+| `implementation` | เขียน code หลัง blueprint ผ่านแล้ว | `implementation-worker`, `code-reviewer` |
+| `review` | ตรวจ QA/review | `qa-risk-reviewer`, `code-reviewer` |
+
+### Model Tier
+
+| Tier | ใช้เมื่อ |
+|---|---|
+| `free` | งานเบา ประหยัด cost |
+| `balanced` | default สำหรับงานทั่วไป |
+| `strong` | architecture, implementation, review, high-risk |
+
+### Effort
+
+| Effort | ใช้เมื่อ |
+|---|---|
+| `low` | งานเล็ก ชัดเจน |
+| `medium` | default |
+| `high` | งานซับซ้อน ต้อง reasoning มาก |
+
+ตัวอย่าง:
 
 ```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . blueprint --roles solution-architect,data-modeler,qa-risk-reviewer --dry-run
+agent-team-start . --preset blueprint --tier strong --effort high --goal "Design approval workflow blueprint" --execute
 ```
 
-## 🧭 Workflow ที่แนะนำ
+## 🚦 Phase Flow
 
-### 1. 🧾 Intake
+```mermaid
+flowchart LR
+    A[Intake] --> B[Discovery]
+    B --> C[Scope]
+    C --> D[Flow]
+    D --> E[Requirements]
+    E --> F[Blueprint]
+    F --> G[Implementation Plan]
+    G --> H[Implementation]
+    H --> I[QA Review]
+    I --> J[Delivery]
 
-เติม:
+    B -.approval gate.-> C
+    F -.human approval for auth/data/migration.-> G
+    I -.delivery gate.-> J
+```
 
-- problem statement
-- primary user
-- current workflow
-- pain point
-- success metric
+## 📊 ถาม Supervisor ระหว่างงาน
 
-ตรวจ:
+ระหว่าง agents ทำงานอยู่ คุณถามได้:
+
+```text
+Use agent-team-start
+งานถึงไหนแล้ว ตอนนี้ agent แต่ละตัวทำอะไรอยู่ มี blocker ไหม
+```
+
+หรือเรียก command:
 
 ```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh . intake
+agent-team-ask . "งานถึงไหนแล้ว ตอนนี้ทำอะไรอยู่ มี blocker ไหม"
 ```
 
-ปิด phase:
+ถ้าไม่ได้ใช้ `npm link`:
 
 ```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/close-phase.sh . intake
+bash ~/Documents/PROJECTS/business-app-agent-team/scripts/ask-supervisor.sh . "งานถึงไหนแล้ว"
 ```
 
-### 2. 🔎 Discovery
+## 📈 Status Flow
 
-ใช้ `discovery-analyst` เพื่อสร้าง:
+```mermaid
+sequenceDiagram
+    participant User
+    participant Ask as agent-team-ask
+    participant State as .agent-team state
+    participant Herdr
+    participant Sup as Supervisor
+    participant Workers
 
-- `docs/product/01-discovery.md`
-- `docs/product/02-clarifying-questions.md`
-- `docs/product/03-use-cases.md`
+    User->>Ask: งานถึงไหนแล้ว?
+    Ask->>State: read current phase, task-board, last-run, results
+    Ask->>Herdr: send STATUS_REQ to supervisor if available
+    Herdr->>Sup: STATUS_REQ
+    Sup->>Workers: ask worker status if needed
+    Workers-->>Sup: current task / blocker / ETA
+    Sup->>State: update supervisor-status.md
+    Sup-->>User: concise progress summary
+```
 
-ตรวจ:
+คำตอบที่ดีควรมี:
+
+- current phase
+- active agents
+- แต่ละ agent ทำอะไรอยู่
+- artifact ที่เสร็จแล้ว
+- blocker/open question
+- next step
+- ETA/confidence ถ้ารู้
+
+## 🧪 ตัวอย่างการใช้งานจริง
+
+### Case: เริ่มระบบ Approval Workflow
+
+1. เปิด Herdr:
 
 ```bash
-bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh . discovery
+cd ~/Documents/PROJECTS/approval-workflow
+herdr
 ```
 
-### 3. 📌 Scope
+2. เปิด Pi supervisor ใน Herdr pane:
 
-ใช้ `product-manager` และ `qa-risk-reviewer` เพื่อสร้าง:
+```bash
+pi \
+  --model opencode-go/glm-5.1 \
+  --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
+  --name supervisor_approval
+```
 
-- `docs/product/04-scope.md`
-- `docs/product/05-requirements.md`
+3. สั่งเริ่ม discovery:
 
-### 4. 🧭 Flow
+```text
+Use agent-team-start
+เริ่ม discovery สำหรับระบบ approval request ของทีม operation ใช้ balanced effort medium
+```
 
-ใช้ `ux-flow-designer` เพื่อสร้าง:
+4. ถ้าต้องการ command ตรง:
 
-- `docs/ux/01-user-journey.md`
-- `docs/ux/02-screen-flow.md`
-- `docs/ux/03-state-and-empty-cases.md`
+```bash
+agent-team-start . --preset discovery --tier balanced --effort medium --goal "Discover approval request workflow for operations team" --execute
+```
 
-### 5. 🏗️ Blueprint
+5. ถามสถานะ:
 
-ใช้ `solution-architect`, `data-modeler`, `qa-risk-reviewer` เพื่อสร้าง:
+```text
+Use agent-team-start
+งานถึงไหนแล้ว มี blocker อะไรไหม
+```
 
-- `docs/architecture/01-system-blueprint.md`
-- `docs/architecture/02-api-contract.md`
-- `docs/architecture/03-security-and-permission.md`
-- `docs/data/01-entity-model.md`
-- `docs/data/02-data-dictionary.md`
-- `docs/data/03-migration-plan.md`
+6. ตรวจ artifact:
 
-### 6. 💻 Implementation
+```bash
+agent-team-status .
+agent-team-validate . discovery
+```
 
-เริ่ม implementation หลังจาก blueprint ผ่านแล้วเท่านั้น
+7. ถ้าผ่านแล้วปิด phase:
 
-ใช้:
-
-- `implementation-worker`
-- `code-reviewer`
-- `qa-risk-reviewer`
+```bash
+agent-team-close-phase . discovery
+```
 
 ## 📋 Agent Result Contract
 
@@ -452,154 +530,105 @@ OPEN_QUESTIONS:
 NEXT_RECOMMENDED_ACTION:
 ```
 
-ถ้า agent ตอบว่า `STATUS: done` แต่ไม่มี artifact, checks, risk, decision หรือยังมีคำถามสำคัญค้างอยู่ supervisor ต้องถือว่ายังไม่ done
+ถ้า agent บอก `done` แต่ไม่มี artifact/check/risk/decision/open question ที่เคลียร์แล้ว supervisor ต้องถือว่ายังไม่เสร็จ
 
-## ✅ Human Approval Policy
+## ✅ Approval Gate
 
-ต้องหยุดและขอ approval ก่อนทำสิ่งเหล่านี้:
+ต้องขอ human approval ก่อน:
 
-- เปลี่ยน database migration
-- ลบไฟล์หรือข้อมูล
-- เปลี่ยน authentication หรือ authorization
-- เพิ่ม paid API, external service, credential
-- แตะ production deployment settings
-- เปลี่ยน business rule ที่ยังไม่ได้ approve
-- จัดการข้อมูล sensitive, financial, legal, health
-- refactor ใหญ่เกิน scope
-- ติดตั้ง dependency ใหม่
-- ทำ irreversible git operation
+- database migration
+- auth/permission logic
+- paid API / external service / credentials
+- production deployment config
+- sensitive personal, financial, legal, health data
+- destructive file/data operation
+- large refactor
+- irreversible git operation
 
-อ่านรายละเอียดใน:
+## 🛠️ Command Reference
 
-```text
-docs/agent/human-approval-policy.md
-```
-
-## 🛠️ คำสั่งสำคัญ
-
-ตรวจ package นี้:
+ถ้าใช้ `npm link`:
 
 ```bash
-bash scripts/validate-package.sh
+agent-team-init /path/to/project
+agent-team-start /path/to/project --preset discovery --tier balanced --effort medium --dry-run
+agent-team-start /path/to/project --preset discovery --tier balanced --effort medium --execute
+agent-team-ask /path/to/project "งานถึงไหนแล้ว"
+agent-team-status /path/to/project
+agent-team-validate /path/to/project discovery
+agent-team-close-phase /path/to/project discovery
 ```
 
-init โปรเจค:
+ถ้าไม่ใช้ `npm link`:
 
 ```bash
-bash scripts/init-project.sh /path/to/project
-```
-
-ดูสถานะโปรเจค:
-
-```bash
-bash scripts/collect-agent-status.sh /path/to/project
-```
-
-ถาม supervisor:
-
-```bash
-bash scripts/ask-supervisor.sh /path/to/project "งานถึงไหนแล้ว"
-```
-
-เริ่มทีมแบบ guided:
-
-```bash
-bash scripts/agent-team-start.sh /path/to/project --preset discovery --tier balanced --effort medium --dry-run
-```
-
-เตรียม agent tasks:
-
-```bash
-bash scripts/spawn-agent-team.sh /path/to/project discovery --dry-run
-```
-
-เปิด agents จริงผ่าน Herdr:
-
-```bash
-bash scripts/spawn-agent-team.sh /path/to/project discovery --execute
-```
-
-ตรวจ phase:
-
-```bash
-bash scripts/validate-artifacts.sh /path/to/project discovery
-```
-
-ปิด phase:
-
-```bash
-bash scripts/close-phase.sh /path/to/project discovery
-```
-
-## 💡 ตัวอย่างโจทย์
-
-ดูตัวอย่างใน:
-
-- `examples/approval-workflow/`
-- `examples/crm-lite/`
-- `examples/internal-dashboard/`
-
-ตัวอย่าง approval workflow:
-
-```text
-We need an approval request system for the operations team.
-Users submit requests with amount, vendor, category, attachments, and justification.
-Team leads approve or reject.
-Finance reviews approved requests before payment.
-We currently use chat messages and spreadsheets.
-Start with discovery. Do not design the system yet.
+bash /path/to/business-app-agent-team/scripts/init-project.sh /path/to/project
+bash /path/to/business-app-agent-team/scripts/agent-team-start.sh /path/to/project --preset discovery --dry-run
+bash /path/to/business-app-agent-team/scripts/ask-supervisor.sh /path/to/project "งานถึงไหนแล้ว"
 ```
 
 ## 🧯 Troubleshooting
 
-### 🧩 `validate-artifacts.sh` fail เพราะมี TBD
+### `herdr` command not found
 
-แปลว่า artifact ยังเป็น template อยู่ ให้เติมข้อมูลจริงก่อน แล้วรันใหม่
+ยังไม่ได้ติดตั้ง Herdr หรือ shell ยังไม่เห็น command ให้ติดตั้ง/ตั้ง PATH ก่อน หรือใช้ `--dry-run`
 
-### 🪟 `herdr` command not found
+### `pi` command not found
 
-แปลว่ายังไม่ได้ติดตั้ง Herdr หรือ shell หา command ไม่เจอ ใช้ `--dry-run` ไปก่อน หรือเปิด agent แบบ manual ด้วย Pi
+`--execute` ต้องใช้ Pi ถ้ายังไม่มี Pi ให้ใช้ manual mode กับ Codex/ChatGPT/Claude โดยให้ agent อ่าน `prompts/supervisor.md`
 
-### 🤖 `pi` command not found
+### ใช้ Codex แทน Pi ได้ไหม
 
-แปลว่ายังไม่ได้ติดตั้ง Pi ใช้ prompts ใน `prompts/` กับ AI tool ที่คุณมีไปก่อน
+ใช้ได้แบบ manual ตอนนี้:
 
-### 🐙 `gh auth status` fail
-
-ให้ login GitHub CLI:
-
-```bash
-gh auth login
+```text
+Read skills/agent-team-start/SKILL.md and prompts/supervisor.md.
+Act as the supervisor.
+Use .agent-team/ and docs/ as source of truth.
 ```
 
-### 🌱 ไม่อยากใช้หลาย agent
+แต่ command `agent-team-start --execute` ยัง spawn worker ด้วย Pi เป็นหลัก
 
-ใช้ agent ตัวเดียวเป็น supervisor ได้ โดยให้มันอ่าน:
+### `validate-artifacts.sh` fail เพราะมี `TBD`
 
-- `prompts/supervisor.md`
-- `docs/operating-model.md`
-- `docs/phase-gates.md`
-- `docs/agent-contract.md`
+แปลว่าเอกสารยังเป็น template ต้องเติมข้อมูลจริงก่อนปิด phase
 
-แล้วให้ทำทีละ phase
+### ถาม status แล้ว supervisor ไม่ตอบ
 
-## 🧱 Design Choice
+เช็ค:
 
-เวอร์ชันนี้ตั้งใจเป็น MVP ที่เสถียร:
+```bash
+agent-team-status .
+herdr agent list
+```
 
-- ใช้ skills, prompts, templates, schemas, scripts ก่อน
-- ยังไม่ทำ Pi extension ใหญ่
-- ใช้ Herdr เป็น optional control plane
-- ใช้งานแบบ manual ได้ถ้าเครื่องยังไม่พร้อม
+ถ้าไม่มี supervisor agent ใน Herdr ให้เปิดใหม่:
 
-เมื่อใช้กับหลายโปรเจคจน pattern นิ่งแล้ว ค่อยเพิ่ม extension เช่น:
+```bash
+pi \
+  --model opencode-go/glm-5.1 \
+  --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/supervisor.md \
+  --name supervisor_<project>
+```
 
-- `/agent-team:start`
-- `/agent-team:status`
-- `/agent-team:close-phase`
+## 🧱 Design Direction
+
+Version นี้ตั้งใจให้เป็น skill-first MVP:
+
+- user เรียก skill ก่อน
+- skill เลือก preset/model/effort
+- scripts เป็น engine เบื้องหลัง
+- Herdr ใช้เป็น control plane
+- Pi เป็น runtime หลักสำหรับ auto-spawn
+- Codex ใช้ได้แบบ manual/fallback
+
+Roadmap ถัดไป:
+
+- Codex runtime adapter สำหรับ auto-spawn
+- Herdr pane verification และ reuse idle pane แบบเต็ม
+- interactive picker สำหรับ preset/model/effort
 - approval gate UI
-- git checkpoint
-- Herdr API integration ที่ลึกขึ้น
+- richer supervisor dashboard/status summary
 
 ## 📄 License
 
