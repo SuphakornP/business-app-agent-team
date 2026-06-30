@@ -179,6 +179,124 @@ prompt_for_role() {
   esac
 }
 
+config_path_for_package() {
+  local package_root="$1"
+  printf '%s\n' "$package_root/config/agent-team.json"
+}
+
+current_phase_for_project() {
+  local target_dir="$1"
+  if [ -f "$target_dir/.agent-team/config.json" ]; then
+    python3 - "$target_dir/.agent-team/config.json" <<'PY' 2>/dev/null || true
+import json
+import sys
+
+data = json.load(open(sys.argv[1]))
+print(data.get("currentPhase", ""))
+PY
+    return 0
+  fi
+  if [ -f "$target_dir/.agent-team/current-phase.md" ]; then
+    awk 'NR > 1 && $0 !~ /^#/ && $0 !~ /^$/ {print; exit}' "$target_dir/.agent-team/current-phase.md"
+    return 0
+  fi
+}
+
+preset_phase_from_config() {
+  local config="$1"
+  local preset="$2"
+  python3 - "$config" "$preset" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1]))
+preset = sys.argv[2]
+entry = data.get("presets", {}).get(preset)
+if not entry:
+    raise SystemExit(f"unknown preset: {preset}")
+print(entry.get("phase", "current"))
+PY
+}
+
+preset_agents_from_config() {
+  local config="$1"
+  local preset="$2"
+  python3 - "$config" "$preset" <<'PY'
+import json
+import sys
+
+data = json.load(open(sys.argv[1]))
+preset = sys.argv[2]
+entry = data.get("presets", {}).get(preset)
+if not entry:
+    raise SystemExit(f"unknown preset: {preset}")
+for agent in entry.get("agents", []):
+    print(agent)
+PY
+}
+
+model_for_role_from_config() {
+  local config="$1"
+  local role="$2"
+  local tier="$3"
+  local effort="$4"
+  python3 - "$config" "$role" "$tier" "$effort" <<'PY'
+import json
+import sys
+
+config_path, role, tier, effort = sys.argv[1:5]
+data = json.load(open(config_path))
+roles = data.get("roles", {})
+profiles = data.get("modelProfiles", {})
+role_cfg = roles.get(role, {})
+tier = tier or role_cfg.get("defaultTier") or "balanced"
+effort = effort or role_cfg.get("defaultEffort") or "medium"
+if tier not in profiles:
+    raise SystemExit(f"unknown model tier: {tier}")
+role_models = role_cfg.get("models", {})
+model = role_models.get(tier) or profiles[tier].get("efforts", {}).get(effort)
+if not model:
+    raise SystemExit(f"no model for role={role} tier={tier} effort={effort}")
+print(model)
+PY
+}
+
+update_task_board_row() {
+  local target_dir="$1"
+  local task_id="$2"
+  local phase="$3"
+  local agent="$4"
+  local task="$5"
+  local status="$6"
+  local artifact="$7"
+  local blocker="${8:--}"
+  local board="$target_dir/.agent-team/task-board.md"
+  mkdir -p "$(dirname "$board")"
+  if [ ! -f "$board" ]; then
+    cat > "$board" <<'BOARD'
+# Agent Task Board
+
+| ID | Phase | Agent | Task | Status | Artifact | Blocker |
+|---|---|---|---|---|---|---|
+BOARD
+  fi
+  if grep -q "^| $task_id |" "$board"; then
+    python3 - "$board" "$task_id" "$phase" "$agent" "$task" "$status" "$artifact" "$blocker" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+task_id, phase, agent, task, status, artifact, blocker = sys.argv[2:]
+replacement = f"| {task_id} | {phase} | {agent} | {task} | {status} | {artifact} | {blocker} |"
+lines = path.read_text().splitlines()
+lines = [replacement if line.startswith(f"| {task_id} |") else line for line in lines]
+path.write_text("\n".join(lines) + "\n")
+PY
+  else
+    printf '| %s | %s | %s | %s | %s | %s | %s |\n' "$task_id" "$phase" "$agent" "$task" "$status" "$artifact" "$blocker" >> "$board"
+  fi
+}
+
 copy_if_missing() {
   local src="$1"
   local dest="$2"

@@ -11,7 +11,10 @@ import sys
 from pathlib import Path
 
 root = Path(sys.argv[1])
-for path in [root / "package.json", *sorted((root / "schemas").glob("*.json"))]:
+json_files = [root / "package.json"]
+json_files.extend(sorted((root / "schemas").glob("*.json")))
+json_files.extend(sorted((root / "config").glob("*.json")))
+for path in json_files:
     json.loads(path.read_text())
     print(f"ok: {path.relative_to(root)}")
 PY

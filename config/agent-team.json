@@ -1,0 +1,135 @@
+{
+  "modelProfiles": {
+    "free": {
+      "description": "Use free/default models for routine planning and lightweight work.",
+      "efforts": {
+        "low": "opencode/minimax-m3-free",
+        "medium": "opencode/mimo-v2.5-free",
+        "high": "opencode/deepseek-v4-flash-free"
+      }
+    },
+    "balanced": {
+      "description": "Use a balanced paid/free mix for normal project work.",
+      "efforts": {
+        "low": "opencode/deepseek-v4-flash-free",
+        "medium": "opencode-go/glm-5.1",
+        "high": "opencode-go/mimo-v2.5-pro"
+      }
+    },
+    "strong": {
+      "description": "Use stronger paid models for architecture, implementation, and review.",
+      "efforts": {
+        "low": "opencode-go/deepseek-v4-flash",
+        "medium": "opencode-go/deepseek-v4-pro",
+        "high": "opencode-go/qwen3.7-max"
+      }
+    }
+  },
+  "roles": {
+    "supervisor-orchestrator": {
+      "prompt": "supervisor.md",
+      "defaultTier": "balanced",
+      "defaultEffort": "high",
+      "models": {
+        "free": "opencode/minimax-m3-free",
+        "balanced": "opencode-go/glm-5.1",
+        "strong": "opencode-go/deepseek-v4-pro"
+      }
+    },
+    "discovery-analyst": {
+      "prompt": "discovery-analyst.md",
+      "defaultTier": "free",
+      "defaultEffort": "medium"
+    },
+    "product-manager": {
+      "prompt": "product-manager.md",
+      "defaultTier": "balanced",
+      "defaultEffort": "medium"
+    },
+    "ux-flow-designer": {
+      "prompt": "ux-flow-designer.md",
+      "defaultTier": "balanced",
+      "defaultEffort": "medium"
+    },
+    "solution-architect": {
+      "prompt": "solution-architect.md",
+      "defaultTier": "strong",
+      "defaultEffort": "high"
+    },
+    "data-modeler": {
+      "prompt": "data-modeler.md",
+      "defaultTier": "strong",
+      "defaultEffort": "medium"
+    },
+    "qa-risk-reviewer": {
+      "prompt": "qa-risk-reviewer.md",
+      "defaultTier": "strong",
+      "defaultEffort": "medium"
+    },
+    "implementation-worker": {
+      "prompt": "implementation-worker.md",
+      "defaultTier": "strong",
+      "defaultEffort": "high"
+    },
+    "code-reviewer": {
+      "prompt": "code-reviewer.md",
+      "defaultTier": "strong",
+      "defaultEffort": "high"
+    }
+  },
+  "presets": {
+    "auto": {
+      "description": "Resolve preset from current phase.",
+      "phase": "current",
+      "agents": []
+    },
+    "discovery": {
+      "description": "Clarify the problem, real workflow, risks, questions, and use cases.",
+      "phase": "discovery",
+      "agents": [
+        "discovery-analyst"
+      ]
+    },
+    "planning": {
+      "description": "Create scope and requirements, then review ambiguity.",
+      "phase": "scope",
+      "agents": [
+        "product-manager",
+        "qa-risk-reviewer"
+      ]
+    },
+    "flow": {
+      "description": "Create user journeys, screen flows, and state coverage.",
+      "phase": "flow",
+      "agents": [
+        "ux-flow-designer",
+        "qa-risk-reviewer"
+      ]
+    },
+    "blueprint": {
+      "description": "Create architecture, API, permission, and data model artifacts.",
+      "phase": "blueprint",
+      "agents": [
+        "solution-architect",
+        "data-modeler",
+        "qa-risk-reviewer"
+      ]
+    },
+    "implementation": {
+      "description": "Run implementation and code review after blueprint approval.",
+      "phase": "implementation",
+      "agents": [
+        "implementation-worker",
+        "code-reviewer"
+      ]
+    },
+    "review": {
+      "description": "Run QA and code review against current delivery evidence.",
+      "phase": "qa",
+      "agents": [
+        "qa-risk-reviewer",
+        "code-reviewer"
+      ]
+    }
+  }
+}

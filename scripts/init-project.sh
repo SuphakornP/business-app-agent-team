@@ -97,6 +97,7 @@ copy_if_missing "$PACKAGE_ROOT/templates/decision-log.md" "$TARGET_DIR/.agent-te
 copy_if_missing "$PACKAGE_ROOT/templates/risk-register.md" "$TARGET_DIR/.agent-team/risk-register.md"
 copy_if_missing "$PACKAGE_ROOT/templates/open-questions.md" "$TARGET_DIR/.agent-team/open-questions.md"
 copy_if_missing "$PACKAGE_ROOT/templates/phase-history.md" "$TARGET_DIR/.agent-team/phase-history.md"
+copy_if_missing "$PACKAGE_ROOT/templates/supervisor-status.md" "$TARGET_DIR/.agent-team/supervisor-status.md"
 
 if [ ! -e "$TARGET_DIR/.agent-team/config.json" ]; then
   cat > "$TARGET_DIR/.agent-team/config.json" <<JSON

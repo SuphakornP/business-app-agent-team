@@ -14,6 +14,7 @@
   "license": "MIT",
   "files": [
     "LICENSE",
+    "config",
     "skills",
     "prompts",
     "templates",
@@ -25,8 +26,10 @@
   ],
   "bin": {
     "agent-team-init": "./scripts/init-project.sh",
+    "agent-team-start": "./scripts/agent-team-start.sh",
     "agent-team-spawn": "./scripts/spawn-agent-team.sh",
     "agent-team-status": "./scripts/collect-agent-status.sh",
+    "agent-team-ask": "./scripts/ask-supervisor.sh",
     "agent-team-validate": "./scripts/validate-artifacts.sh",
     "agent-team-close-phase": "./scripts/close-phase.sh"
   },

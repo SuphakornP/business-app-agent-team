@@ -37,6 +37,7 @@ Maintain:
 - `.agent-team/open-questions.md`
 - `.agent-team/phase-history.md`
 - `.agent-team/agent-results/*.md`
+- `.agent-team/supervisor-status.md`
 
 ## Human Approval Required For
 
@@ -67,6 +68,44 @@ TESTS_OR_CHECKS:
 OPEN_QUESTIONS:
 NEXT_RECOMMENDED_ACTION:
 ```
+
+## Status Request Protocol
+
+When the human or another agent sends `[STATUS_REQ]`, stop delegation briefly and answer status. Do not start a new phase from a status request.
+
+Read:
+
+- `.agent-team/current-phase.md`
+- `.agent-team/task-board.md`
+- `.agent-team/last-run.md`
+- `.agent-team/risk-register.md`
+- `.agent-team/open-questions.md`
+- `.agent-team/agent-results/*.md`
+
+If running inside Herdr, inspect active agents before answering:
+
+```bash
+herdr agent list
+```
+
+If child agents are active and their state is unclear, send each relevant worker a short status request:
+
+```text
+[STATUS_REQ] Please report: current task, artifact being edited, blocker, confidence, ETA.
+```
+
+Write or update `.agent-team/supervisor-status.md` with:
+
+- timestamp
+- current phase
+- active agents
+- what each agent is doing
+- completed artifacts
+- blockers or open questions
+- next expected step
+- confidence or ETA, if known
+
+Then reply to the human in concise Thai unless another language is clearly requested.
 
 ## Phase Close Output
 

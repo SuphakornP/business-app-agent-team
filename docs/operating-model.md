@@ -48,6 +48,7 @@ Use parallel work for:
 - Update `.agent-team/` state files.
 - Ask human approval for high-impact decisions.
 - Retry or split tasks when output lacks evidence.
+- Answer human status questions during active runs by reading `.agent-team/` state, asking workers for `[STATUS_REQ]` updates when needed, and updating `.agent-team/supervisor-status.md`.
 
 ## Worker Responsibilities
 
@@ -56,3 +57,18 @@ Use parallel work for:
 - Record assumptions, risks, checks, and open questions.
 - End with the standard agent result contract.
 - Do not communicate directly with other workers unless the supervisor explicitly delegates that channel.
+
+## Status Questions
+
+Users can ask the supervisor for progress while workers are running. A status request must not start a new phase or change scope.
+
+The supervisor should report:
+
+- current phase
+- active agents and their current work
+- completed artifacts
+- blockers and open questions
+- next expected step
+- confidence or ETA, if known
+
+The durable status artifact is `.agent-team/supervisor-status.md`.

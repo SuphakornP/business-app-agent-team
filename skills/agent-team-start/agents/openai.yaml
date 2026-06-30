@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Team Start"
+  short_description: "Start and query a guided business app agent team"
+  default_prompt: "Use this skill to start a phase-gated agent team, choose agents/model effort, and check supervisor status."

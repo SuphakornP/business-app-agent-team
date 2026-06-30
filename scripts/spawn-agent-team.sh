@@ -14,7 +14,12 @@ TARGET_DIR="$(abs_dir "$TARGET")"
 PHASE="$(normalize_phase "$PHASE")"
 DRY_RUN=1
 ROLE_CSV=""
-MODEL="opencode/minimax-m3-free"
+MODEL=""
+TIER="balanced"
+EFFORT="medium"
+PRESET=""
+GOAL=""
+CONFIG_PATH="$(config_path_for_package "$PACKAGE_ROOT")"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -31,9 +36,29 @@ while [ "$#" -gt 0 ]; do
       [ -n "$ROLE_CSV" ] || die "--roles requires a comma-separated value"
       shift 2
       ;;
+    --preset)
+      PRESET="${2:-}"
+      [ -n "$PRESET" ] || die "--preset requires a value"
+      shift 2
+      ;;
+    --tier)
+      TIER="${2:-}"
+      [ -n "$TIER" ] || die "--tier requires a value"
+      shift 2
+      ;;
+    --effort)
+      EFFORT="${2:-}"
+      [ -n "$EFFORT" ] || die "--effort requires a value"
+      shift 2
+      ;;
     --model)
       MODEL="${2:-}"
       [ -n "$MODEL" ] || die "--model requires a value"
+      shift 2
+      ;;
+    --goal)
+      GOAL="${2:-}"
+      [ -n "$GOAL" ] || die "--goal requires a value"
       shift 2
       ;;
     *)
@@ -47,6 +72,8 @@ mkdir -p "$TASK_DIR"
 
 if [ -n "$ROLE_CSV" ]; then
   ROLES="$(printf '%s' "$ROLE_CSV" | tr ',' '\n')"
+elif [ -n "$PRESET" ] && [ "$PRESET" != "auto" ]; then
+  ROLES="$(preset_agents_from_config "$CONFIG_PATH" "$PRESET")"
 else
   ROLES="$(roles_for_phase "$PHASE")"
 fi
@@ -67,7 +94,7 @@ Created: $NOW
 
 ## Goal
 
-Complete the assigned $PHASE work for $PROJECT_NAME using the role prompt and project artifacts.
+${GOAL:-Complete the assigned $PHASE work for $PROJECT_NAME using the role prompt and project artifacts.}
 
 ## Expected Artifacts
 
@@ -85,6 +112,8 @@ $(required_artifacts_for_phase "$PHASE" | sed 's/^/- /')
 - Project root: $TARGET_DIR
 - Package root: $PACKAGE_ROOT
 - Phase gate: $(phase_gate "$PHASE")
+- Model tier: $TIER
+- Effort: $EFFORT
 - Approval policy: docs/agent/human-approval-policy.md
 
 ## Required Response
@@ -118,20 +147,29 @@ while IFS= read -r role; do
   prompt_file="$PACKAGE_ROOT/prompts/$(prompt_for_role "$role")"
   [ -e "$prompt_file" ] || die "missing prompt for role '$role': $prompt_file"
   task_file="$(create_task_file "$role")"
+  task_id="T-${PHASE}-${role}"
   result_path="$TARGET_DIR/.agent-team/agent-results/${role}.md"
   if [ ! -e "$result_path" ]; then
     cp "$PACKAGE_ROOT/templates/agent-result.md" "$result_path"
   fi
+  if [ -n "$MODEL" ]; then
+    selected_model="$MODEL"
+  else
+    selected_model="$(model_for_role_from_config "$CONFIG_PATH" "$role" "$TIER" "$EFFORT")"
+  fi
+  update_task_board_row "$TARGET_DIR" "$task_id" "$PHASE" "$role" "${GOAL:-Run $PHASE work}" "queued" "$task_file" "-"
 
-  command_text="pi --model \"$MODEL\" --prompt-template \"$prompt_file\" --name \"${role}_${PROJECT_NAME}\" -p \"Read $task_file and execute the task. Write artifacts into $TARGET_DIR.\""
+  command_text="pi --model \"$selected_model\" --prompt-template \"$prompt_file\" --name \"${role}_${PROJECT_NAME}\" -p \"Read $task_file and execute the task. Write artifacts into $TARGET_DIR.\""
 
   if [ "$DRY_RUN" -eq 1 ]; then
     info "prepared task: $task_file"
+    info "selected model: $selected_model (tier=$TIER effort=$EFFORT role=$role)"
     info "dry-run command:"
     info "herdr agent start \"$role\" --cwd \"$TARGET_DIR\" --split right -- $command_text"
   else
     info "starting agent: $role"
-    herdr agent start "$role" --cwd "$TARGET_DIR" --split right -- pi --model "$MODEL" --prompt-template "$prompt_file" --name "${role}_${PROJECT_NAME}" -p "Read $task_file and execute the task. Write artifacts into $TARGET_DIR."
+    update_task_board_row "$TARGET_DIR" "$task_id" "$PHASE" "$role" "${GOAL:-Run $PHASE work}" "working" "$task_file" "-"
+    herdr agent start "$role" --cwd "$TARGET_DIR" --split right -- pi --model "$selected_model" --prompt-template "$prompt_file" --name "${role}_${PROJECT_NAME}" -p "Read $task_file and execute the task. Write artifacts into $TARGET_DIR."
   fi
 done <<EOF_ROLES
 $ROLES

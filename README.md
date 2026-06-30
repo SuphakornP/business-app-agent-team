@@ -6,6 +6,10 @@
 
 ### 2026-06-30
 
+- 🧑‍✈️ เพิ่ม `agent-team-start` skill เพื่อให้เริ่มทีมแบบ skill-first ไม่ต้องจำ shell commands
+- 📊 เพิ่ม flow ถาม supervisor ระหว่างงาน เช่น "งานถึงไหนแล้ว" หรือ "ตอนนี้ทำอะไรอยู่"
+- ⚙️ เพิ่ม `config/agent-team.json` สำหรับ preset, agents, model tier และ effort
+- 🛠️ เพิ่ม `agent-team-start` และ `agent-team-ask` commands สำหรับให้ skill เรียกใช้อยู่เบื้องหลัง
 - ✨ เพิ่ม emoji ใน README เพื่อให้อ่านง่ายและ scan เร็วขึ้น
 - 📝 เพิ่ม Changelog ไว้ด้านบนของ README
 - 🛡️ ขยาย `.gitignore` เพื่อกันไฟล์ local, secrets, cache, logs, runtime state และ agent session artifacts
@@ -226,6 +230,69 @@ Read docs/product/00-intake.md and create the discovery artifacts.
 If something is unclear, ask clarifying questions before scope or system design.
 ```
 
+## 🧑‍✈️ วิธีใช้แบบ Skill-first
+
+เป้าหมายของ flow ใหม่นี้คือ user ไม่ต้องจำ shell commands เอง ให้เรียก skill แล้วให้ agent เป็นคนเลือก preset/model/effort และ run script ให้
+
+ตัวอย่างที่อยากให้ user พิมพ์:
+
+```text
+Use agent-team-start
+เริ่ม agent team สำหรับโปรเจคนี้ ทำ discovery ก่อน ใช้ balanced model effort medium
+```
+
+หรือ:
+
+```text
+Use agent-team-start
+สร้างทีมสำหรับทำ blueprint ระบบ approval workflow ใช้ strong model effort high
+```
+
+skill จะเลือกให้:
+
+- preset: `discovery`, `planning`, `flow`, `blueprint`, `implementation`, `review`
+- agents ที่ควรใช้ใน phase นั้น
+- model tier: `free`, `balanced`, `strong`
+- effort: `low`, `medium`, `high`
+- run mode: `dry-run` หรือ `execute`
+
+ถ้าต้องเรียก command เองจริงๆ ใช้:
+
+```bash
+agent-team-start . --preset discovery --tier balanced --effort medium --goal "Clarify approval workflow" --dry-run
+```
+
+ถ้าพร้อมให้ Herdr/Pi เปิด agents จริง:
+
+```bash
+agent-team-start . --preset discovery --tier balanced --effort medium --goal "Clarify approval workflow" --execute
+```
+
+## 📊 ถาม Supervisor ระหว่างงาน
+
+ระหว่าง supervisor สั่งงาน worker agents ไปแล้ว สามารถถามสถานะได้ เช่น:
+
+```text
+Use agent-team-start
+งานถึงไหนแล้ว ตอนนี้ agent แต่ละตัวทำอะไรอยู่ มี blocker ไหม
+```
+
+skill จะเรียก status flow ให้เอง:
+
+```bash
+agent-team-ask . "งานถึงไหนแล้ว ตอนนี้ทำอะไรอยู่ มี blocker ไหม"
+```
+
+สิ่งที่ระบบจะทำ:
+
+- อ่าน `.agent-team/current-phase.md`
+- อ่าน `.agent-team/task-board.md`
+- อ่าน `.agent-team/agent-results/*.md`
+- อ่าน `.agent-team/supervisor-status.md`
+- ถ้า Herdr ทำงานอยู่ จะส่ง `[STATUS_REQ]` ไปหา supervisor agent
+- ให้ supervisor update `.agent-team/supervisor-status.md`
+- สรุปกลับมาเป็นภาษาคนว่า phase ไหน, ใครทำอะไร, blocker คืออะไร, next step คืออะไร
+
 ## 🤖 วิธีใช้กับ Pi
 
 เปิด Pi ในโปรเจคเป้าหมาย:
@@ -426,6 +493,18 @@ bash scripts/init-project.sh /path/to/project
 
 ```bash
 bash scripts/collect-agent-status.sh /path/to/project
+```
+
+ถาม supervisor:
+
+```bash
+bash scripts/ask-supervisor.sh /path/to/project "งานถึงไหนแล้ว"
+```
+
+เริ่มทีมแบบ guided:
+
+```bash
+bash scripts/agent-team-start.sh /path/to/project --preset discovery --tier balanced --effort medium --dry-run
 ```
 
 เตรียม agent tasks:
