@@ -1,0 +1,4 @@
+interface:
+  display_name: "System Discovery"
+  short_description: "Discover business app problems before design"
+  default_prompt: "Use this skill to clarify a business app idea before proposing a system."

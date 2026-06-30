@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/business-app-agent-team/agent-result.schema.json",
+  "title": "Agent Result",
+  "type": "object",
+  "required": [
+    "status",
+    "confidence",
+    "task_received",
+    "what_i_did",
+    "artifacts_created_or_updated",
+    "key_decisions",
+    "assumptions",
+    "risks",
+    "tests_or_checks",
+    "open_questions",
+    "next_recommended_action"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "done",
+        "blocked",
+        "needs_approval",
+        "failed"
+      ]
+    },
+    "confidence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "task_received": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "what_i_did": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifacts_created_or_updated": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "summary"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "key_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "decision",
+          "reason"
+        ],
+        "properties": {
+          "decision": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "assumption",
+          "impact"
+        ],
+        "properties": {
+          "assumption": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "risk",
+          "severity",
+          "mitigation"
+        ],
+        "properties": {
+          "risk": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "critical",
+              "major",
+              "minor"
+            ]
+          },
+          "mitigation": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tests_or_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "check",
+          "result"
+        ],
+        "properties": {
+          "check": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "question",
+          "owner"
+        ],
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string",
+            "enum": [
+              "human",
+              "supervisor",
+              "another_agent"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "next_recommended_action": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/business-app-agent-team/requirement.schema.json",
+  "title": "Requirement",
+  "type": "object",
+  "required": [
+    "id",
+    "priority",
+    "user_role",
+    "use_case",
+    "trigger",
+    "expected_behavior",
+    "validation",
+    "error_handling",
+    "acceptance_criteria",
+    "related_screen"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^REQ-[0-9]{3,}$"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "must",
+        "should",
+        "later",
+        "out_of_scope"
+      ]
+    },
+    "user_role": {
+      "type": "string"
+    },
+    "use_case": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "string"
+    },
+    "expected_behavior": {
+      "type": "string"
+    },
+    "validation": {
+      "type": "string"
+    },
+    "error_handling": {
+      "type": "string"
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "related_screen": {
+      "type": "string"
+    },
+    "related_entity": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "additionalProperties": false
+}

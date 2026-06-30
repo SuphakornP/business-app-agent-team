@@ -1,0 +1,4 @@
+interface:
+  display_name: "UX Flow Design"
+  short_description: "Design journeys and screen flows before data models"
+  default_prompt: "Use this skill to produce user journeys, screen flows, and UI states."

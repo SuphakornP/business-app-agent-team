@@ -1,0 +1,4 @@
+interface:
+  display_name: "Requirement Slicing"
+  short_description: "Slice requirements into scoped delivery phases"
+  default_prompt: "Use this skill to turn discovery into scoped requirements and acceptance criteria."

@@ -1,0 +1,44 @@
+{
+  "name": "business-app-agent-team",
+  "version": "0.1.0",
+  "description": "Phase-gated agent team kit for business app discovery, requirements, design, implementation, QA, and delivery.",
+  "keywords": [
+    "pi-package",
+    "agent-team",
+    "herdr",
+    "business-app",
+    "requirements",
+    "system-design",
+    "qa"
+  ],
+  "license": "UNLICENSED",
+  "files": [
+    "skills",
+    "prompts",
+    "templates",
+    "schemas",
+    "scripts",
+    "docs",
+    "examples",
+    "README.md"
+  ],
+  "bin": {
+    "agent-team-init": "./scripts/init-project.sh",
+    "agent-team-spawn": "./scripts/spawn-agent-team.sh",
+    "agent-team-status": "./scripts/collect-agent-status.sh",
+    "agent-team-validate": "./scripts/validate-artifacts.sh",
+    "agent-team-close-phase": "./scripts/close-phase.sh"
+  },
+  "scripts": {
+    "check": "bash scripts/validate-package.sh",
+    "validate:package": "bash scripts/validate-package.sh"
+  },
+  "pi": {
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts"
+    ]
+  }
+}

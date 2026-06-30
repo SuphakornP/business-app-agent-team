@@ -1,0 +1,4 @@
+interface:
+  display_name: "QA Risk Review"
+  short_description: "Review ambiguity, risk, and test coverage"
+  default_prompt: "Use this skill to perform a strict QA and risk review."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Model Review"
+  short_description: "Map entities and fields back to flows"
+  default_prompt: "Use this skill to design or review data models after flows are clear."
