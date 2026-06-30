@@ -1,16 +1,29 @@
-# Business App Agent Team
+# 🤖 Business App Agent Team
+
+## 📝 Changelog
+
+> เวลาแก้ไข repo นี้ ให้เพิ่มรายการใหม่ไว้บนสุดของ section นี้ เพื่อให้คนอ่านเห็นความเปลี่ยนแปลงล่าสุดทันที
+
+### 2026-06-30
+
+- ✨ เพิ่ม emoji ใน README เพื่อให้อ่านง่ายและ scan เร็วขึ้น
+- 📝 เพิ่ม Changelog ไว้ด้านบนของ README
+- 🛡️ ขยาย `.gitignore` เพื่อกันไฟล์ local, secrets, cache, logs, runtime state และ agent session artifacts
+- 📄 เพิ่ม MIT License และอัปเดต `package.json`
+- 🚀 สร้าง public GitHub repo และ push package เวอร์ชันแรก
+- 🧩 สร้าง MVP package: skills, prompts, templates, schemas, scripts, docs และ examples
 
 Agent Team Kit สำหรับสร้างทีม AI agents แบบมีระบบ เหมาะกับงานสร้าง web app, internal tool, dashboard, approval workflow, CRM/ERP-lite และ business process software
 
 Repo นี้ไม่ได้เป็นแค่ prompt เดี่ยว แต่เป็น package กลางที่รวม:
 
-- วิธีคิดของ supervisor agent
-- role ของ specialist agents
-- phase gate ตั้งแต่ discovery ถึง delivery
-- artifact templates
-- agent result contract
-- approval policy
-- scripts สำหรับเริ่มโปรเจคใหม่และตรวจ phase
+- 🧠 วิธีคิดของ supervisor agent
+- 👥 role ของ specialist agents
+- 🚦 phase gate ตั้งแต่ discovery ถึง delivery
+- 📁 artifact templates
+- 📋 agent result contract
+- ✅ approval policy
+- 🛠️ scripts สำหรับเริ่มโปรเจคใหม่และตรวจ phase
 
 เป้าหมายคือให้ทุกโปรเจคใหม่ติดตั้ง workflow เดียวกันได้ แล้วลดปัญหา AI รีบออกแบบระบบหรือเขียนโค้ดก่อนเข้าใจโจทย์จริง
 
@@ -18,30 +31,30 @@ Repo นี้ไม่ได้เป็นแค่ prompt เดี่ยว 
 Intake -> Discovery -> Scope -> Flow -> Requirements -> Blueprint -> Implementation Plan -> Implementation -> QA -> Delivery
 ```
 
-## เหมาะกับใคร
+## 🎯 เหมาะกับใคร
 
-- คนที่อยากใช้ AI agents หลายตัวช่วยทำงานโปรเจค software
-- ทีมที่อยากให้ AI เริ่มจาก discovery, scope, requirement, UX flow ก่อนเขียนโค้ด
-- คนที่ใช้ Pi, Herdr, Codex, Claude หรือ coding agents อื่นๆ อยู่แล้ว
-- มือใหม่ด้าน AI agents ที่อยากมี workflow ชัด ไม่ปล่อยให้ agent ทำงานมั่วหรือข้ามขั้น
+- 👨‍💻 คนที่อยากใช้ AI agents หลายตัวช่วยทำงานโปรเจค software
+- 🧭 ทีมที่อยากให้ AI เริ่มจาก discovery, scope, requirement, UX flow ก่อนเขียนโค้ด
+- 🧰 คนที่ใช้ Pi, Herdr, Codex, Claude หรือ coding agents อื่นๆ อยู่แล้ว
+- 🌱 มือใหม่ด้าน AI agents ที่อยากมี workflow ชัด ไม่ปล่อยให้ agent ทำงานมั่วหรือข้ามขั้น
 
-## แนวคิดแบบง่าย
+## 🧠 แนวคิดแบบง่าย
 
 ให้คิดว่า repo นี้สร้าง "ทีมงาน AI" แบบนี้:
 
-- `supervisor-orchestrator`: หัวหน้าทีม คุม phase, แตก task, ตรวจงาน, ขอ approval
-- `discovery-analyst`: นักวิเคราะห์โจทย์ ถามคำถามก่อนออกแบบ
-- `product-manager`: แปลง discovery เป็น scope และ requirements
-- `ux-flow-designer`: ทำ user journey, screen flow, state ต่างๆ
-- `solution-architect`: ทำ architecture, API, permission, integration
-- `data-modeler`: ทำ data model หลังจาก flow ชัดแล้ว
-- `qa-risk-reviewer`: ตรวจ requirement, risk, test gap, edge case
-- `implementation-worker`: เขียนโค้ดหลังจาก blueprint ผ่านแล้ว
-- `code-reviewer`: review implementation ก่อนส่งมอบ
+- 🧑‍✈️ `supervisor-orchestrator`: หัวหน้าทีม คุม phase, แตก task, ตรวจงาน, ขอ approval
+- 🔎 `discovery-analyst`: นักวิเคราะห์โจทย์ ถามคำถามก่อนออกแบบ
+- 📌 `product-manager`: แปลง discovery เป็น scope และ requirements
+- 🧭 `ux-flow-designer`: ทำ user journey, screen flow, state ต่างๆ
+- 🏗️ `solution-architect`: ทำ architecture, API, permission, integration
+- 🗃️ `data-modeler`: ทำ data model หลังจาก flow ชัดแล้ว
+- 🧪 `qa-risk-reviewer`: ตรวจ requirement, risk, test gap, edge case
+- 💻 `implementation-worker`: เขียนโค้ดหลังจาก blueprint ผ่านแล้ว
+- 🔍 `code-reviewer`: review implementation ก่อนส่งมอบ
 
 หลักสำคัญ: supervisor ไม่เชื่อคำว่า "done" เฉยๆ ต้องมี artifact, test/check, risk, decision log และ open questions ที่เคลียร์แล้ว
 
-## สิ่งที่อยู่ใน repo
+## 📦 สิ่งที่อยู่ใน repo
 
 ```text
 business-app-agent-team/
@@ -54,19 +67,19 @@ business-app-agent-team/
   examples/     # ตัวอย่างโจทย์สำหรับลองใช้
 ```
 
-## ต้องติดตั้งอะไรบ้าง
+## 🧰 ต้องติดตั้งอะไรบ้าง
 
 ขั้นต่ำ:
 
-- `git`
-- `bash`
-- `python3`
+- ✅ `git`
+- ✅ `bash`
+- ✅ `python3`
 
 แนะนำสำหรับใช้งานเต็มรูปแบบ:
 
-- `gh` GitHub CLI สำหรับ clone/create/push repo
-- `pi` สำหรับรัน supervisor และ workers
-- `herdr` สำหรับเปิดหลาย agent ใน terminal panes
+- 🐙 `gh` GitHub CLI สำหรับ clone/create/push repo
+- 🤖 `pi` สำหรับรัน supervisor และ workers
+- 🪟 `herdr` สำหรับเปิดหลาย agent ใน terminal panes
 
 เช็คเครื่องมือ:
 
@@ -91,9 +104,9 @@ brew install gh
 gh auth login
 ```
 
-## วิธีติดตั้ง
+## 🚀 วิธีติดตั้ง
 
-### วิธีที่ 1: Clone จาก GitHub
+### 1. Clone จาก GitHub
 
 ```bash
 cd ~/Documents/PROJECTS
@@ -116,7 +129,7 @@ validating skills
 package validation passed
 ```
 
-### วิธีที่ 2: ใช้เป็น Pi package
+### 2. ใช้เป็น Pi package
 
 ถ้า Pi environment ของคุณรองรับ package install:
 
@@ -132,7 +145,7 @@ pi install -l /path/to/business-app-agent-team
 
 ถ้า command นี้ใช้ไม่ได้ในเครื่องคุณ ให้ใช้วิธี clone repo แล้วเรียก scripts ด้วย path ตรงๆ แทน
 
-## เริ่มใช้กับโปรเจคใหม่
+## 🧪 เริ่มใช้กับโปรเจคใหม่
 
 สมมติคุณมีโปรเจคอยู่ที่:
 
@@ -190,7 +203,7 @@ bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh 
 
 หมายเหตุ: ครั้งแรก validator อาจ fail เพราะไฟล์ยังเป็น template ที่มี `TBD` อยู่ นี่ตั้งใจให้เป็นแบบนั้น เพื่อบังคับให้เติมข้อมูลจริงก่อนปิด phase
 
-## วิธีใช้งานแบบง่ายที่สุด
+## 🌱 วิธีใช้งานแบบง่ายที่สุด
 
 ถ้าคุณยังไม่พร้อมใช้ Herdr หรือ Pi ให้ใช้ repo นี้แบบ manual ก่อน
 
@@ -213,7 +226,7 @@ Read docs/product/00-intake.md and create the discovery artifacts.
 If something is unclear, ask clarifying questions before scope or system design.
 ```
 
-## วิธีใช้กับ Pi
+## 🤖 วิธีใช้กับ Pi
 
 เปิด Pi ในโปรเจคเป้าหมาย:
 
@@ -236,7 +249,7 @@ Use the artifacts in docs/ and .agent-team/.
 pi --prompt-template ~/Documents/PROJECTS/business-app-agent-team/prompts/discovery-analyst.md --name discovery_my-new-app
 ```
 
-## วิธีใช้กับ Herdr
+## 🪟 วิธีใช้กับ Herdr
 
 Herdr เหมาะเมื่ออยากเปิด agent หลายตัวเป็น panes และให้ supervisor คุมงาน
 
@@ -280,9 +293,9 @@ bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . 
 bash ~/Documents/PROJECTS/business-app-agent-team/scripts/spawn-agent-team.sh . blueprint --roles solution-architect,data-modeler,qa-risk-reviewer --dry-run
 ```
 
-## Workflow ที่แนะนำ
+## 🧭 Workflow ที่แนะนำ
 
-### 1. Intake
+### 1. 🧾 Intake
 
 เติม:
 
@@ -304,7 +317,7 @@ bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh 
 bash ~/Documents/PROJECTS/business-app-agent-team/scripts/close-phase.sh . intake
 ```
 
-### 2. Discovery
+### 2. 🔎 Discovery
 
 ใช้ `discovery-analyst` เพื่อสร้าง:
 
@@ -318,14 +331,14 @@ bash ~/Documents/PROJECTS/business-app-agent-team/scripts/close-phase.sh . intak
 bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh . discovery
 ```
 
-### 3. Scope
+### 3. 📌 Scope
 
 ใช้ `product-manager` และ `qa-risk-reviewer` เพื่อสร้าง:
 
 - `docs/product/04-scope.md`
 - `docs/product/05-requirements.md`
 
-### 4. Flow
+### 4. 🧭 Flow
 
 ใช้ `ux-flow-designer` เพื่อสร้าง:
 
@@ -333,7 +346,7 @@ bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh 
 - `docs/ux/02-screen-flow.md`
 - `docs/ux/03-state-and-empty-cases.md`
 
-### 5. Blueprint
+### 5. 🏗️ Blueprint
 
 ใช้ `solution-architect`, `data-modeler`, `qa-risk-reviewer` เพื่อสร้าง:
 
@@ -344,7 +357,7 @@ bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh 
 - `docs/data/02-data-dictionary.md`
 - `docs/data/03-migration-plan.md`
 
-### 6. Implementation
+### 6. 💻 Implementation
 
 เริ่ม implementation หลังจาก blueprint ผ่านแล้วเท่านั้น
 
@@ -354,7 +367,7 @@ bash ~/Documents/PROJECTS/business-app-agent-team/scripts/validate-artifacts.sh 
 - `code-reviewer`
 - `qa-risk-reviewer`
 
-## Agent Result Contract
+## 📋 Agent Result Contract
 
 ทุก worker ต้องจบงานด้วย format นี้:
 
@@ -374,7 +387,7 @@ NEXT_RECOMMENDED_ACTION:
 
 ถ้า agent ตอบว่า `STATUS: done` แต่ไม่มี artifact, checks, risk, decision หรือยังมีคำถามสำคัญค้างอยู่ supervisor ต้องถือว่ายังไม่ done
 
-## Human Approval Policy
+## ✅ Human Approval Policy
 
 ต้องหยุดและขอ approval ก่อนทำสิ่งเหล่านี้:
 
@@ -395,7 +408,7 @@ NEXT_RECOMMENDED_ACTION:
 docs/agent/human-approval-policy.md
 ```
 
-## คำสั่งสำคัญ
+## 🛠️ คำสั่งสำคัญ
 
 ตรวจ package นี้:
 
@@ -439,7 +452,7 @@ bash scripts/validate-artifacts.sh /path/to/project discovery
 bash scripts/close-phase.sh /path/to/project discovery
 ```
 
-## ตัวอย่างโจทย์
+## 💡 ตัวอย่างโจทย์
 
 ดูตัวอย่างใน:
 
@@ -458,21 +471,21 @@ We currently use chat messages and spreadsheets.
 Start with discovery. Do not design the system yet.
 ```
 
-## Troubleshooting
+## 🧯 Troubleshooting
 
-### `validate-artifacts.sh` fail เพราะมี TBD
+### 🧩 `validate-artifacts.sh` fail เพราะมี TBD
 
 แปลว่า artifact ยังเป็น template อยู่ ให้เติมข้อมูลจริงก่อน แล้วรันใหม่
 
-### `herdr` command not found
+### 🪟 `herdr` command not found
 
 แปลว่ายังไม่ได้ติดตั้ง Herdr หรือ shell หา command ไม่เจอ ใช้ `--dry-run` ไปก่อน หรือเปิด agent แบบ manual ด้วย Pi
 
-### `pi` command not found
+### 🤖 `pi` command not found
 
 แปลว่ายังไม่ได้ติดตั้ง Pi ใช้ prompts ใน `prompts/` กับ AI tool ที่คุณมีไปก่อน
 
-### `gh auth status` fail
+### 🐙 `gh auth status` fail
 
 ให้ login GitHub CLI:
 
@@ -480,7 +493,7 @@ Start with discovery. Do not design the system yet.
 gh auth login
 ```
 
-### ไม่อยากใช้หลาย agent
+### 🌱 ไม่อยากใช้หลาย agent
 
 ใช้ agent ตัวเดียวเป็น supervisor ได้ โดยให้มันอ่าน:
 
@@ -491,7 +504,7 @@ gh auth login
 
 แล้วให้ทำทีละ phase
 
-## Design Choice
+## 🧱 Design Choice
 
 เวอร์ชันนี้ตั้งใจเป็น MVP ที่เสถียร:
 
@@ -509,7 +522,7 @@ gh auth login
 - git checkpoint
 - Herdr API integration ที่ลึกขึ้น
 
-## License
+## 📄 License
 
 MIT License
 
